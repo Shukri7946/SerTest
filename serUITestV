@@ -1092,8 +1092,8 @@ function Library:Create(xHubName)
 		local LabelText = LabelText or "Label"
 		local labelFunctions = {}
 		local Label = Instance.new("TextLabel")
-		
 		local LabCorner = Instance.new("UICorner")
+		
 		Label.Name = "Label"
 		Label.Parent = parent
 		Label.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
@@ -1128,7 +1128,7 @@ function Library:Create(xHubName)
 		Container.Parent = parent
 		Container.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
 		Container.BorderColor3 = Color3.fromRGB(27, 42, 53)
-		Container.Size = UDim2.new(1, -20, 0, 40)  -- Start with fixed height, will update dynamically
+		Container.Size = UDim2.new(1, -20, 0, 40)
 
 		local UICorner = Instance.new("UICorner")
 		UICorner.CornerRadius = UDim.new(0, 5)
@@ -1158,18 +1158,18 @@ function Library:Create(xHubName)
 		TextInput.TextSize = 14
 		TextInput.Position = UDim2.new(1, -10, 0.5, 0)
 		TextInput.AnchorPoint = Vector2.new(1, 0.5)
-		TextInput.Size = UDim2.new(0, 100, 0.7, 0)  -- Start width 100, height 70% of container
+		TextInput.Size = UDim2.new(0, 100, 0.7, 0)
 
 		local UICornerTextBox = Instance.new("UICorner")
 		UICornerTextBox.CornerRadius = UDim.new(0, 4)
 		UICornerTextBox.Parent = TextInput
 
-		-- UIStroke if you want, replace this line if you have a UIStroke instance:
-		-- local stroke = UIStroke:Clone()
-		-- stroke.Parent = TextInput
+		if UIStroke then
+			UIStroke:Clone().Parent = TextInput
+		end
 
 		local minWidth = 50
-		local maxWidth = Container.AbsoluteSize.X * 0.6  -- max 60% of container width
+		local maxWidth = Container.AbsoluteSize.X * 0.6
 		local padding = 15
 		local approxCharWidth = 7
 
@@ -1178,12 +1178,7 @@ function Library:Create(xHubName)
 			local desiredWidth = math.clamp(textLength * approxCharWidth + padding, minWidth, maxWidth)
 			TextInput.Size = UDim2.new(0, desiredWidth, 0.7, 0)
 		end
-		
-		local function UpdateText()
-			callback(TextInput.Text, true)
-			updateWidth()
-		end
-		
+
 		TextInput:GetPropertyChangedSignal("Text"):Connect(function()
 			callback(TextInput.Text, false)
 			updateWidth()
@@ -1193,7 +1188,6 @@ function Library:Create(xHubName)
 			callback(TextInput.Text, true)
 		end)
 
-		-- Update width initially and on container resize
 		Container:GetPropertyChangedSignal("AbsoluteSize"):Connect(function()
 			maxWidth = Container.AbsoluteSize.X * 0.6
 			updateWidth()
@@ -1201,13 +1195,13 @@ function Library:Create(xHubName)
 
 		updateWidth()
 
-			return TextInput, UpdateText
+		return TextInput, function()
+			callback(TextInput.Text, true)
+			updateWidth()
 		end
-
-
-
-
-
+	end
+	
+	
 	--toggle
 	function Library:Toggle(tab, toggleName, callback)
 		local TweenService = game:GetService("TweenService")
@@ -2301,17 +2295,36 @@ function Library:Create(xHubName)
 
 			Option.MouseButton1Click:Connect(function()
 				if table.find(selectedOptions, optionText) then
+					-- Remove selection
 					table.remove(selectedOptions, table.find(selectedOptions, optionText))
 					game:GetService("TweenService"):Create(Icon, TweenInfo.new(0.1), {
 						ImageTransparency = 1
 					}):Play()
 					Checkbox.BackgroundColor3 = disabledColor
 				else
+					-- Add selection
 					table.insert(selectedOptions, optionText)
 					game:GetService("TweenService"):Create(Icon, TweenInfo.new(0.1), {
 						ImageTransparency = 0
 					}):Play()
 					Checkbox.BackgroundColor3 = selectedColor
+				end
+
+				-- **If no selection and only one option, force select it**
+				if #selectedOptions == 0 and #options == 1 then
+					table.insert(selectedOptions, options[1])
+					-- Update checkbox visual for the only option:
+					local onlyOption = List:FindFirstChild("Option1")
+					if onlyOption then
+						local cb = onlyOption:FindFirstChild("Checkbox")
+						local icon = cb and cb:FindFirstChild("Icon")
+						if icon then
+							game:GetService("TweenService"):Create(icon, TweenInfo.new(0.1), {
+								ImageTransparency = 0
+							}):Play()
+						end
+						cb.BackgroundColor3 = selectedColor
+					end
 				end
 
 				-- Update title text
@@ -2327,6 +2340,7 @@ function Library:Create(xHubName)
 					callback(selectedOptions)
 				end
 			end)
+
 
 			Option.MouseEnter:Connect(function()
 				Option.BackgroundColor3 = hoverColor
@@ -2439,19 +2453,39 @@ function Library:Create(xHubName)
 
 				Option.MouseButton1Click:Connect(function()
 					if table.find(selectedOptions, optionText) then
+						-- Remove selection
 						table.remove(selectedOptions, table.find(selectedOptions, optionText))
 						game:GetService("TweenService"):Create(Icon, TweenInfo.new(0.1), {
 							ImageTransparency = 1
 						}):Play()
-						Checkbox.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+						Checkbox.BackgroundColor3 = disabledColor
 					else
+						-- Add selection
 						table.insert(selectedOptions, optionText)
 						game:GetService("TweenService"):Create(Icon, TweenInfo.new(0.1), {
 							ImageTransparency = 0
 						}):Play()
-						Checkbox.BackgroundColor3 = Color3.fromRGB(0, 85, 127)
+						Checkbox.BackgroundColor3 = selectedColor
 					end
 
+					-- **If no selection and only one option, force select it**
+					if #selectedOptions == 0 and #options == 1 then
+						table.insert(selectedOptions, options[1])
+						-- Update checkbox visual for the only option:
+						local onlyOption = List:FindFirstChild("Option1")
+						if onlyOption then
+							local cb = onlyOption:FindFirstChild("Checkbox")
+							local icon = cb and cb:FindFirstChild("Icon")
+							if icon then
+								game:GetService("TweenService"):Create(icon, TweenInfo.new(0.1), {
+									ImageTransparency = 0
+								}):Play()
+							end
+							cb.BackgroundColor3 = selectedColor
+						end
+					end
+
+					-- Update title text
 					if #selectedOptions == 0 then
 						Title.Text = dropdownName
 					elseif #selectedOptions == 1 then
@@ -2464,23 +2498,33 @@ function Library:Create(xHubName)
 						callback(selectedOptions)
 					end
 				end)
+
 			end
 		end
 
 		function MdrFunction:SetSel(selected)
 			selectedOptions = selected or {}
 
-			-- Update checkboxes
+			if #selectedOptions == 0 and #options == 1 then
+				selectedOptions = {options[1]}
+			end
+
+			
 			for i, option in ipairs(options) do
 				local optionButton = List:FindFirstChild("Option" .. i)
 				if optionButton then
-					local Checkmark = optionButton:FindFirstChild("Checkbox"):FindFirstChild("Checkmark")
+					local Checkbox = optionButton:FindFirstChild("Checkbox")
+					local Icon = Checkbox and Checkbox:FindFirstChild("Icon")
 					if table.find(selectedOptions, option) then
-						Checkmark.Visible = true
-						optionButton.Checkbox.BackgroundColor3 = Color3.fromRGB(0, 85, 127)
+						if Icon then
+							Icon.ImageTransparency = 0
+						end
+						Checkbox.BackgroundColor3 = selectedColor
 					else
-						Checkmark.Visible = false
-						optionButton.Checkbox.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+						if Icon then
+							Icon.ImageTransparency = 1
+						end
+						Checkbox.BackgroundColor3 = disabledColor
 					end
 				end
 			end
@@ -2498,6 +2542,7 @@ function Library:Create(xHubName)
 				callback(selectedOptions)
 			end
 		end
+
 
 		function MdrFunction:GetSel()
 			return selectedOptions
