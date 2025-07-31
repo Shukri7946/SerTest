@@ -1124,101 +1124,87 @@ function Library:Create(xHubName)
 
 
 	function Library:TextBox(parent, titleText, defaultValue, callback)
-		local Textbox = Instance.new("TextButton")
-		Textbox.Parent = parent
-		Textbox.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
-		Textbox.BorderColor3 = Color3.fromRGB(27, 42, 53)
-		Textbox.Position = UDim2.new(0, 0, 0.439, 0)
-		Textbox.Selectable = false
-		Textbox.Size = UDim2.new(1, -20, 0, 51)
-		Textbox.AutoButtonColor = false
-		Textbox.TextWrapped = true
-		Textbox.Text = ""
+		local Container = Instance.new("Frame")
+		Container.Parent = parent
+		Container.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+		Container.BorderColor3 = Color3.fromRGB(27, 42, 53)
+		Container.Size = UDim2.new(1, -20, 0, 40)  -- Start with fixed height, will update dynamically
 
 		local UICorner = Instance.new("UICorner")
 		UICorner.CornerRadius = UDim.new(0, 5)
-		UICorner.Parent = Textbox
+		UICorner.Parent = Container
 
-		local TextLabel = Instance.new("TextLabel")
-		TextLabel.Parent = Textbox
-		TextLabel.BackgroundTransparency = 1
-		TextLabel.Font = Enum.Font.GothamMedium
-		TextLabel.Text = titleText
-		TextLabel.TextColor3 = Color3.fromRGB(193, 193, 193)
-		TextLabel.TextSize = 12
-		TextLabel.TextXAlignment = Enum.TextXAlignment.Left
-		TextLabel.Position = UDim2.new(0, 10, 0, 0)
-		TextLabel.Size = UDim2.new(0.4, 0, 0, 31)  -- 40% width to left
+		local TitleLabel = Instance.new("TextLabel")
+		TitleLabel.Parent = Container
+		TitleLabel.BackgroundTransparency = 1
+		TitleLabel.Font = Enum.Font.GothamMedium
+		TitleLabel.Text = titleText
+		TitleLabel.TextColor3 = Color3.fromRGB(193, 193, 193)
+		TitleLabel.TextSize = 14
+		TitleLabel.TextXAlignment = Enum.TextXAlignment.Left
+		TitleLabel.Position = UDim2.new(0, 10, 0.5, 0)
+		TitleLabel.AnchorPoint = Vector2.new(0, 0.5)
+		TitleLabel.Size = UDim2.new(0.5, -10, 1, 0)
 
-		local Status = Instance.new("Frame")
-		Status.Name = "Status"
-		Status.Parent = Textbox
-		Status.BackgroundTransparency = 1
-		Status.Position = UDim2.new(0, 0, 1, -28)
-		Status.Size = UDim2.new(1, 0, 0, 28)
+		local TextInput = Instance.new("TextBox")
+		TextInput.Parent = Container
+		TextInput.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+		TextInput.BorderColor3 = Color3.fromRGB(27, 42, 53)
+		TextInput.ClearTextOnFocus = false
+		TextInput.Font = Enum.Font.Gotham
+		TextInput.PlaceholderColor3 = Color3.fromRGB(104, 104, 104)
+		TextInput.Text = defaultValue or ""
+		TextInput.TextColor3 = Color3.fromRGB(177, 177, 177)
+		TextInput.TextSize = 14
+		TextInput.Position = UDim2.new(1, -10, 0.5, 0)
+		TextInput.AnchorPoint = Vector2.new(1, 0.5)
+		TextInput.Size = UDim2.new(0, 100, 0.7, 0)  -- Start width 100, height 70% of container
 
-		local TextBox = Instance.new("TextBox")
-		TextBox.Parent = Status
-		TextBox.Active = false
-		TextBox.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-		TextBox.BorderColor3 = Color3.fromRGB(27, 42, 53)
-		TextBox.ClipsDescendants = true
-		TextBox.ClearTextOnFocus = false
-		TextBox.Font = Enum.Font.Gotham
-		TextBox.PlaceholderColor3 = Color3.fromRGB(104, 104, 104)
-		TextBox.Text = defaultValue or ""
-		TextBox.TextColor3 = Color3.fromRGB(177, 177, 177)
-		TextBox.TextSize = 12
+		local UICornerTextBox = Instance.new("UICorner")
+		UICornerTextBox.CornerRadius = UDim.new(0, 4)
+		UICornerTextBox.Parent = TextInput
 
-		local UICorner_2 = Instance.new("UICorner")
-		UICorner_2.CornerRadius = UDim.new(0, 2)
-		UICorner_2.Parent = TextBox
+		-- UIStroke if you want, replace this line if you have a UIStroke instance:
+		-- local stroke = UIStroke:Clone()
+		-- stroke.Parent = TextInput
 
-		-- Constants for sizing
 		local minWidth = 50
-		local maxWidth = Textbox.AbsoluteSize.X - 20
-		local padding = 10
+		local maxWidth = Container.AbsoluteSize.X * 0.6  -- max 60% of container width
+		local padding = 15
+		local approxCharWidth = 7
 
-		local function updateLayout()
-			local textLength = TextBox.Text ~= "" and #TextBox.Text or #defaultValue or 0
-			local approxCharWidth = 7 -- Approx width per char for Gotham font size 12
-			local newWidth = math.clamp(textLength * approxCharWidth + padding * 2, minWidth, maxWidth)
-
-			if newWidth < maxWidth then
-				-- Title left, textbox right with dynamic width
-				TextLabel.Position = UDim2.new(0, 10, 0, 0)
-				TextLabel.Size = UDim2.new(0, Textbox.AbsoluteSize.X - newWidth - 30, 0, 31)
-
-				TextBox.Position = UDim2.new(1, -newWidth - 10, 0.5, -8)
-				TextBox.Size = UDim2.new(0, newWidth, 0, 17)
-			else
-				-- Max width reached, title moves top left and textbox full width below
-				TextLabel.Position = UDim2.new(0, 10, 0, 0)
-				TextLabel.Size = UDim2.new(1, -20, 0, 20)
-
-				TextBox.Position = UDim2.new(0, 10, 0, 25)
-				TextBox.Size = UDim2.new(1, -20, 0, 17)
-			end
+		local function updateWidth()
+			local textLength = #TextInput.Text
+			local desiredWidth = math.clamp(textLength * approxCharWidth + padding, minWidth, maxWidth)
+			TextInput.Size = UDim2.new(0, desiredWidth, 0.7, 0)
 		end
-
-		TextBox:GetPropertyChangedSignal("Text"):Connect(function()
-			callback(TextBox.Text, false)
-			updateLayout()
+		
+		local function UpdateText()
+			callback(TextInput.Text, true)
+			updateWidth()
+		end
+		
+		TextInput:GetPropertyChangedSignal("Text"):Connect(function()
+			callback(TextInput.Text, false)
+			updateWidth()
 		end)
 
-		local function UpdateText()
-			callback(TextBox.Text, true)
-			updateLayout()
+		TextInput.FocusLost:Connect(function()
+			callback(TextInput.Text, true)
+		end)
+
+		-- Update width initially and on container resize
+		Container:GetPropertyChangedSignal("AbsoluteSize"):Connect(function()
+			maxWidth = Container.AbsoluteSize.X * 0.6
+			updateWidth()
+		end)
+
+		updateWidth()
+
+			return TextInput, UpdateText
 		end
-
-		TextBox.FocusLost:Connect(UpdateText)
-
-		-- Initial layout update
-		Textbox:GetPropertyChangedSignal("AbsoluteSize"):Connect(updateLayout)
-		updateLayout()
-
-		return TextBox, UpdateText
 	end
+
 
 
 
