@@ -1309,7 +1309,8 @@ function Library:Create(xHubName)
 		-- Button click event
 		Button.MouseButton1Click:Connect(function()
 			--ImageLabel.ImageColor3 = Color3.fromRGB(255, 255, 255)
-			colorChange(ImageLabel, Color3.fromRGB(255, 255, 255), 2)
+			ColorChange(ImageLabel, Color3.fromRGB(255, 255, 255), 2)
+
 			Callback()
 			ImageLabel.ImageColor3 = Color3.fromRGB(104, 104, 104)
 		end)
@@ -1412,16 +1413,18 @@ function Library:Create(xHubName)
 		UICornerTextBox.CornerRadius = UDim.new(0, 4)
 		UICornerTextBox.Parent = TextInput
 		
-		local textBstroke = UIStroke:Clone()
-		textBstroke.Parent = TextInput
-		
-		Container.MouseEnter:Connect(function()
-			TweenService:Create(textBstroke, TweenInfo.new(0.1), {Color = Color3.fromRGB(20, 115, 215)}):Play() -- 86, 34, 34
-		end)
+		local stroke = UIStroke:Clone()
+		stroke.Parent = TextInput
+		stroke.Color = Color3.fromRGB(50, 50, 50)
+		stroke.Thickness = 2
 
-		Container.MouseLeave:Connect(function()
-			TweenService:Create(textBstroke, TweenInfo.new(0.1), {Color = Color3.fromRGB(50, 50, 50)}):Play()
+		TextInput.MouseEnter:Connect(function()
+			TweenService:Create(stroke, TweenInfo.new(0.1), {Color = Color3.fromRGB(20, 115, 215)}):Play()
 		end)
+		TextInput.MouseLeave:Connect(function()
+			TweenService:Create(stroke, TweenInfo.new(0.1), {Color = Color3.fromRGB(50, 50, 50)}):Play()
+		end)
+		
 		
 		local minWidth = 50
 		local maxWidth = math.max(Container.AbsoluteSize.X * 0.6, minWidth)
