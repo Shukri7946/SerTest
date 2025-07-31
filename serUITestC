@@ -62,7 +62,14 @@ function Library:Drag(obj)
 	end)
 end
 
+function Library:DragMultiple(...)
+	local args = {...}
+	for _, uiObject in ipairs(args) do
+		self:Drag(uiObject)
+	end
+end
 
+-- Library:DragMultiple(Menu, Topbar, ImageButtonK)
 
 
 
@@ -309,11 +316,12 @@ function Library:Create(xHubName)
 	--Properties:
 	ScreenGui.Name = xHubName
 	ScreenGui.Parent = game.CoreGui
-
 	ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+	
 	Library:Drag(Menu, Topbar)
-
-
+	Library:Drag(ImageButtonK)
+	
+	
 	LoadingFrame.Name = "LoadingFrame"
 	LoadingFrame.Parent = ScreenGui
 	LoadingFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
@@ -1145,7 +1153,10 @@ function Library:Create(xHubName)
 		TitleLabel.Position = UDim2.new(0, 10, 0.5, 0)
 		TitleLabel.AnchorPoint = Vector2.new(0, 0.5)
 		TitleLabel.Size = UDim2.new(0.5, -10, 1, 0)
-
+		TitleLabel.TextWrapped = true
+		
+		
+		
 		local TextInput = Instance.new("TextBox")
 		TextInput.Parent = Container
 		TextInput.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
@@ -1179,13 +1190,14 @@ function Library:Create(xHubName)
 			TextInput.Size = UDim2.new(0, desiredWidth, 0.7, 0)
 		end
 
+		-- Remove callback on text change for live typing if you want
 		TextInput:GetPropertyChangedSignal("Text"):Connect(function()
-			callback(TextInput.Text, false)
 			updateWidth()
 		end)
 
 		TextInput.FocusLost:Connect(function()
 			callback(TextInput.Text, true)
+			updateWidth()
 		end)
 
 		Container:GetPropertyChangedSignal("AbsoluteSize"):Connect(function()
@@ -1200,6 +1212,7 @@ function Library:Create(xHubName)
 			updateWidth()
 		end
 	end
+
 	
 	
 	--toggle
@@ -1228,7 +1241,7 @@ function Library:Create(xHubName)
 
 		local Tsound = Instance.new("Sound", Toggle)
 		Tsound.SoundId = "rbxassetid://2809024273"
-		Tsound.Volume = 0.5
+		Tsound.Volume = 0.4
 
 		local TextLabel = Instance.new("TextLabel", Toggle)
 		TextLabel.BackgroundTransparency = 1.000
@@ -1301,7 +1314,7 @@ function Library:Create(xHubName)
 
 		Toggle.MouseEnter:Connect(function()
 			Tsound:Play()
-			TweenService:Create(uistrokeT, TweenInfo.new(0.1), {Color = Color3.fromRGB(86, 34, 34)}):Play()
+			TweenService:Create(uistrokeT, TweenInfo.new(0.1), {Color = Color3.fromRGB(20, 115, 215)}):Play() -- 86, 34, 34
 		end)
 
 		Toggle.MouseLeave:Connect(function()
@@ -1357,7 +1370,7 @@ function Library:Create(xHubName)
 		Title.AnchorPoint = Vector2.new(0, 0.5)
 		Title.BackgroundTransparency = 1
 		Title.Position = UDim2.new(0, 10, 0.5, 0)
-		Title.Size = UDim2.new(0.3, 0, 0, 14)
+		Title.Size = UDim2.new(0.4, 0, 0, 14) -- 50% of the parent width
 		Title.Font = Enum.Font.GothamMedium
 		Title.Text = Name
 		Title.TextColor3 = Color3.fromRGB(200, 200, 200)
@@ -1372,8 +1385,9 @@ function Library:Create(xHubName)
 		Main.BackgroundColor3 = Color3.fromRGB(55, 55, 55)
 		Main.BackgroundTransparency = 0.8
 		Main.BorderSizePixel = 0
-		Main.Position = UDim2.new(1, -10, 0.5, 0)
-		Main.Size = UDim2.new(0.65, 0, 0, 30)
+		Main.Position = UDim2.new(1, -10, 0.5, 0) 
+		Main.Size = UDim2.new(0.5, 0, 0, 30) -- 40% of the parent width
+		Main.ZIndex = 3
 
 		UICorner_2.CornerRadius = UDim.new(0, 6)
 		UICorner_2.Parent = Main
@@ -1436,6 +1450,8 @@ function Library:Create(xHubName)
 		Interact.Text = ""
 
 		-- Slider logic
+		local currentValue = Min
+
 		local function updateValue(mouseX)
 			local relativeX = mouseX - Main.AbsolutePosition.X
 			local percent = math.clamp(relativeX / Main.AbsoluteSize.X, 0, 1)
@@ -1443,7 +1459,7 @@ function Library:Create(xHubName)
 			newValue = math.clamp(newValue, Min, Max)
 			Progress.Size = UDim2.new(percent, 0, 1, 0)
 			Information.Text = tostring(newValue)
-			Callback(newValue)
+			currentValue = newValue
 		end
 
 		local function setProgress(value)
@@ -1460,12 +1476,14 @@ function Library:Create(xHubName)
 				moveConn = Interact.InputChanged:Connect(function(input)
 					if input.UserInputType == Enum.UserInputType.MouseMovement then
 						updateValue(input.Position.X)
+						-- Do NOT call Callback here
 					end
 				end)
 				releaseConn = game:GetService("UserInputService").InputEnded:Connect(function(input)
 					if input.UserInputType == Enum.UserInputType.MouseButton1 then
 						if moveConn then moveConn:Disconnect() end
 						if releaseConn then releaseConn:Disconnect() end
+						Callback(currentValue)  -- Call callback only once here on release
 					end
 				end)
 			end
@@ -2068,7 +2086,7 @@ function Library:Create(xHubName)
 		local MdrFunction = {}
 		local hoverColor = settings.hoverColor or Color3.fromRGB(75, 75, 75)
 		local disabledColor = settings.disabledColor or Color3.fromRGB(29, 29, 29)
-		local selectedColor = settings.selectedColor or Color3.fromRGB(255, 100, 100)
+		local selectedColor = settings.selectedColor or Color3.fromRGB(0, 170, 255)
 		local defaultColor = Color3.fromRGB(55, 55, 55)
 		local searchPlaceholder = settings.searchPlaceholder or "Search..."
 		local customFont = settings.customFont or Enum.Font.GothamMedium
@@ -2233,7 +2251,7 @@ function Library:Create(xHubName)
 			local Checkbox = Instance.new("Frame")
 			Checkbox.Name = "Checkbox"
 			Checkbox.Parent = Option
-			Checkbox.BackgroundColor3 = Color3.fromRGB(29, 29, 29)
+			Checkbox.BackgroundColor3 = disabledColor
 			Checkbox.BorderSizePixel = 0
 			Checkbox.Size = UDim2.new(0, 15, 0, 15)
 			Checkbox.Position = UDim2.new(0, 5, 0.5, -7.5)
@@ -2264,7 +2282,7 @@ function Library:Create(xHubName)
 			Icon.Size = UDim2.new(0, 20, 0, 20)
 			Icon.Image = "http://www.roblox.com/asset/?id=13319773302"
 			Icon.ImageColor3 = Color3.fromRGB(0, 0, 0)
-			--Icon.ImageTransparency = 1.000
+			Icon.ImageTransparency = 1.000
 
 			local UIScale = Instance.new("UIScale", Icon)
 			UIScale.Scale = 0.800
