@@ -816,7 +816,7 @@ function Library:Create(xHubName)
 					child.Visible = false
 				end
 			end
-			ImageLabel.Image = "http://www.roblox.com/asset/?id=6153965706" -- Open icon
+			ImageLabel.Image = "rbxassetid://6153965696" -- Open icon
 		end
 
 		minimized = not minimized
@@ -1337,15 +1337,16 @@ function Library:Create(xHubName)
 		Label.TextSize = 12
 		Label.Font = Enum.Font.GothamMedium
 		
-		Label.TextWrapped = true              -- Wrap text inside the label width
-	--	Label.TextXAlignment = Enum.TextXAlignment.Left  -- Align text to left
-		Label.TextYAlignment = Enum.TextYAlignment.Center -- Vertically center text
-		Label.TextTruncate = Enum.TextTruncate.None       -- Don't truncate text
+		Label.TextWrapped = true       
+	--	Label.TextXAlignment = Enum.TextXAlignment.Left  
+		Label.TextYAlignment = Enum.TextYAlignment.Center 
+		Label.TextTruncate = Enum.TextTruncate.None 
 		
 		LabCorner.CornerRadius = UDim.new(0, 5)
 		LabCorner.Parent = Label
 		
 		local Labstroke = Instance.new("UIStroke")
+		Labstroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
 		Labstroke.Parent = Label
 		
 		Label.MouseEnter:Connect(function()
@@ -1692,10 +1693,8 @@ function Library:Create(xHubName)
 		
 		Slider.MouseEnter:Connect(function()
 			TweenService:Create(UIStroke_2, TweenInfo.new(0.1), {Color = Color3.fromRGB(20, 115, 215)}):Play() -- 86, 34, 34
-			TweenService:Create(UIStroke_3, TweenInfo.new(0.1), {Color = Color3.fromRGB(8, 45, 83)}):Play() -- 86, 34, 34
+			TweenService:Create(UIStroke_3, TweenInfo.new(0.1), {Color = Color3.fromRGB(14, 76, 139)}):Play() -- 86, 34, 34
 
-			
-			
 		end)
 
 		Slider.MouseLeave:Connect(function()
@@ -1937,7 +1936,7 @@ function Library:Create(xHubName)
 		colorElement.BackgroundTransparency = 1.000
 		colorElement.ClipsDescendants = true
 		colorElement.Position = UDim2.new(0, 0, 0.566834569, 0)
-		colorElement.Size = UDim2.new(0, -20, 0, 33)
+		colorElement.Size = UDim2.new(0, 352, 0, 33)
 		colorElement.AutoButtonColor = false
 		colorElement.Font = Enum.Font.SourceSans
 		colorElement.Text = ""
