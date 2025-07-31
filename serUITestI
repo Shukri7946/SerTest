@@ -813,12 +813,12 @@ function Library:Create(xHubName)
 			Menu:TweenSize(minimizedSize, Enum.EasingDirection.Out, Enum.EasingStyle.Quad, 0.3, true)
 
 			for _, child in pairs(Menu:GetChildren()) do
-				if (child:IsA("GuiObject") ) and child.Name ~= "Topbar" then
+				if (child:IsA("Frame") or child:IsA("ScrollingFrame")) and child.Name ~= "Topbar" then
 					child.Visible = false
 				end
 			end
-
-			ImageLabel.Image = "rbxassetid://6153965706" -- Open icon
+			
+			ImageLabel.Image = "http://www.roblox.com/asset/?id=6153965706" -- Open icon
 		end
 
 		minimized = not minimized
@@ -842,18 +842,16 @@ function Library:Create(xHubName)
 		end
 	end)
 
-
-
 	ImageButtonK.MouseButton1Click:Connect(function()
 
 
 		if Menu.Visible then
 			-- Uncomment the desired fade-out effect
-			-- fadeOut(Menu, 0.3)  -- Fade out Main frame
+			FadeOut(Menu, 0.3)  -- Fade out Main frame
 
 			FadeOut(Topbar, 0.3)
 
-			Scale(Menu, minimizedSize, 4)  -- Scale down Main frame
+			Scale(Menu, minimizedSize, 0.3)  -- Scale down Main frame
 			--rotate(Menu, 0.3)  -- Rotate Main frame
 			
 			--pulse(Menu, 0.3)  -- Pulse Main frame
@@ -873,11 +871,12 @@ function Library:Create(xHubName)
 		else
 
 			-- Uncomment the desired fade-in effect
-			--fadeIn(Menu, 0.3)  -- Fade in Main frame
+			FadeIn(Menu, 0.3)  -- Fade in Main frame
 
 			FadeIn(Topbar, 0.3)
 
-			Scale(Menu, originalSize, 4)  -- Scale up Main frame
+			Scale(Menu, originalSize, 0.3)  -- Scale up Main frame
+			
 			--rotate(Menu, 0.3)  -- Rotate Main frame
 			--pulse(Menu, 0.3)  -- Pulse Main frame
 			--shake(Menu, 0.3)  -- Shake Main frame
@@ -1348,9 +1347,16 @@ function Library:Create(xHubName)
 		
 		LabCorner.CornerRadius = UDim.new(0, 5)
 		LabCorner.Parent = Label
-
-		UIStroke:Clone().Parent = Label
-
+		
+		local Labstroke = UIStroke:Clone()
+		Labstroke.Parent = Label
+		
+		Label.MouseEnter:Connect(function()
+			TweenService:Create(Labstroke, TweenInfo.new(0.1), {Color = Color3.fromRGB(20, 115, 215)}):Play()
+		end)
+		Label.MouseLeave:Connect(function()
+			TweenService:Create(Labstroke, TweenInfo.new(0.1), {Color = Color3.fromRGB(35, 35, 35)}):Play()
+		end)
 
 		function labelFunctions:UpdateLabel(newText)
 			Label.Text = newText
@@ -1405,7 +1411,7 @@ function Library:Create(xHubName)
 		UICornerTextBox.Parent = TextInput
 		
 		local stroke = UIStroke:Clone()
-		stroke.Parent = TextInput
+		stroke.Parent = Container
 		stroke.Color = Color3.fromRGB(50, 50, 50)
 		stroke.Thickness = 2
 
@@ -1417,15 +1423,18 @@ function Library:Create(xHubName)
 		end)
 		
 		
-		local minWidth = 50
-		local maxWidth = math.max(Container.AbsoluteSize.X * 0.6, minWidth)
+		local minWidthConst = 50
 		local padding = 15
 		local approxCharWidth = 7
 
 		local function updateWidth()
+			local containerMax = Container.AbsoluteSize.X * 0.6
+			local realMin = math.min(minWidthConst, containerMax)
+			local realMax = math.max(minWidthConst, containerMax)
 			local textLength = #TextInput.Text
-			local desiredWidth = math.clamp(textLength * approxCharWidth + padding, minWidth, maxWidth)
-			TextInput.Size = UDim2.new(0, desiredWidth, 0, TextInput.AbsoluteSize.Y)
+			local desired = textLength * approxCharWidth + padding
+			local w = math.clamp(desired, realMin, realMax)
+			TextInput.Size = UDim2.new(0, w, 0, TextInput.AbsoluteSize.Y)
 		end
 
 		-- Remove callback on text change for live typing if you want
@@ -1438,10 +1447,7 @@ function Library:Create(xHubName)
 			updateWidth()
 		end)
 
-		Container:GetPropertyChangedSignal("AbsoluteSize"):Connect(function()
-			maxWidth = Container.AbsoluteSize.X * 0.6
-			updateWidth()
-		end)
+		Container:GetPropertyChangedSignal("AbsoluteSize"):Connect(updateWidth)
 
 		updateWidth()
 
@@ -1689,10 +1695,16 @@ function Library:Create(xHubName)
 		
 		Slider.MouseEnter:Connect(function()
 			TweenService:Create(UIStroke_2, TweenInfo.new(0.1), {Color = Color3.fromRGB(20, 115, 215)}):Play() -- 86, 34, 34
+			TweenService:Create(UIStroke_3, TweenInfo.new(0.1), {Color = Color3.fromRGB(20, 115, 215)}):Play() -- 86, 34, 34
+
+			
+			
 		end)
 
 		Slider.MouseLeave:Connect(function()
-			TweenService:Create(UIStroke_2, TweenInfo.new(0.1), {Color = Color3.fromRGB(50, 50, 50)}):Play()
+			TweenService:Create(UIStroke_2, TweenInfo.new(0.1), {Color = Color3.fromRGB(60, 60, 60)}):Play()
+			TweenService:Create(UIStroke_3, TweenInfo.new(0.1), {Color = Color3.fromRGB(60, 60, 60)}):Play()
+
 		end)
 		
 		-- Slider logic
