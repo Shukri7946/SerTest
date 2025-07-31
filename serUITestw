@@ -411,7 +411,7 @@ function Library:Create(xHubName)
 
 	coroutine.resume(textCoroutine)
 	coroutine.resume(progressCoroutine)
-
+	
 	Library:rotate(LoadingImage, 0.5, 4)
 
 	wait(4) -- Simulating loading time
@@ -706,6 +706,7 @@ function Library:Create(xHubName)
 
 			Library:scale(Menu, minimizedSize, 0.3)  -- Scale down Main frame
 			--rotate(Menu, 0.3)  -- Rotate Main frame
+			
 			--pulse(Menu, 0.3)  -- Pulse Main frame
 			--shake(Menu, 0.3)  -- Shake Main frame
 			--colorChange(Menu, 0.3)  -- Change color of Main frame
