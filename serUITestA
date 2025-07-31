@@ -1936,7 +1936,7 @@ function Library:Create(xHubName)
 		colorElement.BackgroundTransparency = 1.000
 		colorElement.ClipsDescendants = true
 		colorElement.Position = UDim2.new(0, 0, 0.566834569, 0)
-		colorElement.Size = UDim2.new(0, 352, 0, 33)
+		colorElement.Size = UDim2.new(1, -20, 0, 31)
 		colorElement.AutoButtonColor = false
 		colorElement.Font = Enum.Font.SourceSans
 		colorElement.Text = ""
