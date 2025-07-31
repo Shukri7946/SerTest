@@ -153,7 +153,6 @@ function ColorChange(element, targetColor, duration)
 	local tweenInfo = TweenInfo.new(duration, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut)
 	local tween = TweenService:Create(element, tweenInfo, {BackgroundColor3 = targetColor})
 	tween:Play()
-	return tween
 end
 
 -- Bounce (vertical movement bounceHeight)
@@ -167,7 +166,6 @@ function Bounce(element, bounceHeight, duration)
 		)
 	})
 	tween:Play()
-	return tween
 end
 
 -- Flip rotation by targetRotation degrees
@@ -175,7 +173,6 @@ function Flip(element, targetRotation, duration)
 	local tweenInfo = TweenInfo.new(duration, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut)
 	local tween = TweenService:Create(element, tweenInfo, {Rotation = targetRotation})
 	tween:Play()
-	return tween
 end
 
 -- Wobble effect (position oscillates by wobbleAmount)
@@ -190,56 +187,50 @@ function Wobble(element, wobbleAmount, duration)
 		)
 	})
 	tween:Play()
-	return tween
 end
 
 -- Fade and Move together (background transparency & position)
-function FadeAndMove(element, targetTransparency, targetPosition, duration)
+local function FadeAndMove(element, targetTransparency, targetPosition, duration)
 	local tweenInfo = TweenInfo.new(duration, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut)
 	local tween = TweenService:Create(element, tweenInfo, {
 		BackgroundTransparency = targetTransparency,
 		Position = targetPosition
 	})
 	tween:Play()
-	return tween
 end
 
 -- Rotate and Scale simultaneously
-function RotateAndScale(element, targetRotation, targetSize, duration)
+local function RotateAndScale(element, targetRotation, targetSize, duration)
 	local tweenInfo = TweenInfo.new(duration, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut)
 	local tween = TweenService:Create(element, tweenInfo, {
 		Rotation = targetRotation,
 		Size = targetSize
 	})
 	tween:Play()
-	return tween
 end
 
 -- Flash between two colors repeatedly
-function Flash(element, color1, color2, duration)
+local function Flash(element, color1, color2, duration)
 	local tweenInfo = TweenInfo.new(duration / 2, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut, -1, true)
 	local tween = TweenService:Create(element, tweenInfo, {BackgroundColor3 = color1})
 	tween:Play()
 	tween.Completed:Connect(function()
 		element.BackgroundColor3 = color2
 	end)
-	return tween
 end
 
 -- Expand to targetSize
-function Expand(element, targetSize, duration)
+local function Expand(element, targetSize, duration)
 	local tweenInfo = TweenInfo.new(duration, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
 	local tween = TweenService:Create(element, tweenInfo, {Size = targetSize})
 	tween:Play()
-	return tween
 end
 
 -- Contract to zero size
-function Contract(element, duration)
+local function Contract(element, duration)
 	local tweenInfo = TweenInfo.new(duration, Enum.EasingStyle.Quad, Enum.EasingDirection.In)
 	local tween = TweenService:Create(element, tweenInfo, {Size = UDim2.new(0, 0, 0, 0)})
 	tween:Play()
-	return tween
 end
 
 
