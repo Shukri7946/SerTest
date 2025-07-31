@@ -1203,7 +1203,6 @@ function Library:Create(xHubName)
 
 			return TextInput, UpdateText
 		end
-	end
 
 
 
