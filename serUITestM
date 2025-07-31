@@ -1,7 +1,14 @@
+
+
 -- Gui to Lua
 -- Version: 3.2
 
 -- Instances:
+
+if not game:IsLoaded() then
+	game.Loaded:Wait()
+end
+
 local Library = {}
 
 -- Random UI Name
@@ -301,7 +308,7 @@ function Library:Create(xHubName)
 
 	--Properties:
 	ScreenGui.Name = xHubName
-	ScreenGui.Parent =   game.CoreGui
+	ScreenGui.Parent = game.CoreGui
 
 	ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 	Library:Drag(Menu, Topbar)
@@ -1117,88 +1124,103 @@ function Library:Create(xHubName)
 
 
 	function Library:TextBox(parent, titleText, defaultValue, callback)
-		-- Create main Textbox container
 		local Textbox = Instance.new("TextButton")
 		Textbox.Parent = parent
 		Textbox.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
 		Textbox.BorderColor3 = Color3.fromRGB(27, 42, 53)
-		Textbox.Position = UDim2.new(0, 0, 0.439393938, 0) -- Adjusted position to match other components
+		Textbox.Position = UDim2.new(0, 0, 0.439, 0)
 		Textbox.Selectable = false
-		Textbox.Size = UDim2.new(1, -20, 0, 51)  -- Adjusted width to fit parent dynamically
+		Textbox.Size = UDim2.new(1, -20, 0, 51)
 		Textbox.AutoButtonColor = false
-		Textbox.TextWrapped = true     
-
+		Textbox.TextWrapped = true
 		Textbox.Text = ""
 
-		-- Apply corner radius to Textbox
 		local UICorner = Instance.new("UICorner")
 		UICorner.CornerRadius = UDim.new(0, 5)
 		UICorner.Parent = Textbox
 
-		-- Create and configure TextLabel
 		local TextLabel = Instance.new("TextLabel")
 		TextLabel.Parent = Textbox
-		TextLabel.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-		TextLabel.BackgroundTransparency = 1.000
-		TextLabel.BorderColor3 = Color3.fromRGB(27, 42, 53)
-		TextLabel.Size = UDim2.new(1, -20, 0, 31)  -- Adjusted width to fit parent dynamically
-		TextLabel.Position = UDim2.new(0, 10, 0, 0)  -- Adjusted position
+		TextLabel.BackgroundTransparency = 1
 		TextLabel.Font = Enum.Font.GothamMedium
 		TextLabel.Text = titleText
 		TextLabel.TextColor3 = Color3.fromRGB(193, 193, 193)
-		TextLabel.TextSize = 12.000
+		TextLabel.TextSize = 12
 		TextLabel.TextXAlignment = Enum.TextXAlignment.Left
+		TextLabel.Position = UDim2.new(0, 10, 0, 0)
+		TextLabel.Size = UDim2.new(0.4, 0, 0, 31)  -- 40% width to left
 
-		-- Create and configure Status frame
 		local Status = Instance.new("Frame")
 		Status.Name = "Status"
 		Status.Parent = Textbox
-		Status.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-		Status.BackgroundTransparency = 1.000
-		Status.BorderColor3 = Color3.fromRGB(27, 42, 53)
-		Status.Position = UDim2.new(0, 0, 1, -28)  -- Adjusted position to bottom
+		Status.BackgroundTransparency = 1
+		Status.Position = UDim2.new(0, 0, 1, -28)
 		Status.Size = UDim2.new(1, 0, 0, 28)
 
-		-- Create and configure TextBox
 		local TextBox = Instance.new("TextBox")
 		TextBox.Parent = Status
 		TextBox.Active = false
 		TextBox.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
 		TextBox.BorderColor3 = Color3.fromRGB(27, 42, 53)
 		TextBox.ClipsDescendants = true
-		TextBox.Position = UDim2.new(0, 10, 0.5, -8)  -- Adjusted position to center vertically
-		TextBox.Size = UDim2.new(1, -20, 0, 17)  -- Adjusted width to fit parent dynamically
 		TextBox.ClearTextOnFocus = false
 		TextBox.Font = Enum.Font.Gotham
 		TextBox.PlaceholderColor3 = Color3.fromRGB(104, 104, 104)
-		--TextBox.PlaceholderText = defaultValue
-		TextBox.Text = defaultValue
+		TextBox.Text = defaultValue or ""
 		TextBox.TextColor3 = Color3.fromRGB(177, 177, 177)
-		TextBox.TextSize = 12.000
+		TextBox.TextSize = 12
 
-
-		UIStroke:Clone().Parent = TextBox
-		UIStroke:Clone().Parent = Status
-
-
-		-- Apply corner radius to TextBox
 		local UICorner_2 = Instance.new("UICorner")
 		UICorner_2.CornerRadius = UDim.new(0, 2)
 		UICorner_2.Parent = TextBox
 
-		-- Event handling for TextBox text changed
+		-- Constants for sizing
+		local minWidth = 50
+		local maxWidth = Textbox.AbsoluteSize.X - 20
+		local padding = 10
+
+		local function updateLayout()
+			local textLength = TextBox.Text ~= "" and #TextBox.Text or #defaultValue or 0
+			local approxCharWidth = 7 -- Approx width per char for Gotham font size 12
+			local newWidth = math.clamp(textLength * approxCharWidth + padding * 2, minWidth, maxWidth)
+
+			if newWidth < maxWidth then
+				-- Title left, textbox right with dynamic width
+				TextLabel.Position = UDim2.new(0, 10, 0, 0)
+				TextLabel.Size = UDim2.new(0, Textbox.AbsoluteSize.X - newWidth - 30, 0, 31)
+
+				TextBox.Position = UDim2.new(1, -newWidth - 10, 0.5, -8)
+				TextBox.Size = UDim2.new(0, newWidth, 0, 17)
+			else
+				-- Max width reached, title moves top left and textbox full width below
+				TextLabel.Position = UDim2.new(0, 10, 0, 0)
+				TextLabel.Size = UDim2.new(1, -20, 0, 20)
+
+				TextBox.Position = UDim2.new(0, 10, 0, 25)
+				TextBox.Size = UDim2.new(1, -20, 0, 17)
+			end
+		end
+
 		TextBox:GetPropertyChangedSignal("Text"):Connect(function()
 			callback(TextBox.Text, false)
+			updateLayout()
 		end)
 
 		local function UpdateText()
 			callback(TextBox.Text, true)
+			updateLayout()
 		end
 
 		TextBox.FocusLost:Connect(UpdateText)
 
-		return TextBox, UpdateText 
+		-- Initial layout update
+		Textbox:GetPropertyChangedSignal("AbsoluteSize"):Connect(updateLayout)
+		updateLayout()
+
+		return TextBox, UpdateText
 	end
+
+
 
 
 	--toggle
@@ -1641,15 +1663,16 @@ function Library:Create(xHubName)
 
 		colorElement.Name = "colorElement"
 		colorElement.Parent = tab
-		colorElement.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+		colorElement.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+		colorElement.BackgroundTransparency = 1.000
 		colorElement.ClipsDescendants = true
-		colorElement.Position = UDim2.new(0, 0, 0.57, 0)
+		colorElement.Position = UDim2.new(0, 0, 0.566834569, 0)
 		colorElement.Size = UDim2.new(0, 352, 0, 33)
 		colorElement.AutoButtonColor = false
 		colorElement.Font = Enum.Font.SourceSans
 		colorElement.Text = ""
 		colorElement.TextColor3 = Color3.fromRGB(0, 0, 0)
-		colorElement.TextSize = 14
+		colorElement.TextSize = 14.000
 		colorElement.MouseButton1Click:Connect(function()
 			if not focusing then
 				if colorOpened then
@@ -1701,81 +1724,83 @@ function Library:Create(xHubName)
 		end)
 
 
-		UICorner.CornerRadius = UDim.new(0, 6)
+		UICorner.CornerRadius = UDim.new(0, 4)
 		UICorner.Parent = colorElement
 
 		colorHeader.Name = "colorHeader"
 		colorHeader.Parent = colorElement
-		colorHeader.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
-		colorHeader.Size = UDim2.new(1, 0, 0, 33)
+		colorHeader.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+		colorHeader.Size = UDim2.new(0, 352, 0, 33)
 		colorHeader.ClipsDescendants = true
 
-		UICorner_2.CornerRadius = UDim.new(0, 6)
+		UICorner_2.CornerRadius = UDim.new(0, 4)
 		UICorner_2.Parent = colorHeader
 
 		touch.Name = "touch"
 		touch.Parent = colorHeader
-		touch.BackgroundTransparency = 1
-		touch.Position = UDim2.new(0.02, 0, 0.18, 0)
-		touch.Size = UDim2.new(0, 24, 0, 24)
+		touch.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+		touch.BackgroundTransparency = 1.000
+		touch.BorderColor3 = Color3.fromRGB(27, 42, 53)
+		touch.Position = UDim2.new(0.0199999996, 0, 0.180000007, 0)
+		touch.Size = UDim2.new(0, 21, 0, 21)
 		touch.Image = "rbxassetid://3926305904"
-		touch.ImageColor3 = Color3.fromRGB(150, 150, 150)
+		touch.ImageColor3 = Color3.fromRGB(64, 64, 64)
 		touch.ImageRectOffset = Vector2.new(44, 964)
 		touch.ImageRectSize = Vector2.new(36, 36)
 
-
 		togName.Name = "togName"
 		togName.Parent = colorHeader
-		togName.BackgroundTransparency = 1
-		togName.Position = UDim2.new(0.1, 0, 0.24, 0)
-		togName.Size = UDim2.new(0, 280, 0, 18)
+		togName.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+		togName.BackgroundTransparency = 1.000
+		togName.Position = UDim2.new(0.096704483, 0, 0.272727281, 0)
+		togName.Size = UDim2.new(0, 288, 0, 14)
 		togName.Font = Enum.Font.GothamSemibold
 		togName.Text = colText
-		togName.TextColor3 = Color3.fromRGB(255, 255, 255)
-		togName.TextSize = 16
+		togName.TextColor3 = Color3.fromRGB(255,255,255)
+		togName.TextSize = 14.000
+		togName.RichText = true
 		togName.TextXAlignment = Enum.TextXAlignment.Left
 
 
 		colorCurrent.Name = "colorCurrent"
 		colorCurrent.Parent = colorHeader
 		colorCurrent.BackgroundColor3 = defcolor
-		colorCurrent.Position = UDim2.new(0.75, 0, 0.3, 0)
-		colorCurrent.Size = UDim2.new(0, 40, 0, 20)
+		colorCurrent.Position = UDim2.new(0.548704505, 0, 0.333606154, 0)
+		colorCurrent.Size = UDim2.new(0, 42, 0, 18)
 
-		UICorner_3.CornerRadius = UDim.new(0, 6)
+		UICorner_3.CornerRadius = UDim.new(0, 4)
 		UICorner_3.Parent = colorCurrent
 
-		-- Layout for expanded color picker
 		UIListLayout.Parent = colorElement
 		UIListLayout.SortOrder = Enum.SortOrder.LayoutOrder
-		UIListLayout.Padding = UDim.new(0, 6)
+		UIListLayout.Padding = UDim.new(0, 3)
 
-		-- Inner color picking frame (initially hidden)
 		colorInners.Name = "colorInners"
 		colorInners.Parent = colorElement
-		colorInners.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-		colorInners.Position = UDim2.new(0, 0, 0.25, 0)
-		colorInners.Size = UDim2.new(0, 340, 0, 110)
-		colorInners.Visible = false
+		colorInners.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+		colorInners.Position = UDim2.new(0, 0, 0.255319148, 0)
+		colorInners.Size = UDim2.new(0, 281, 0, 105)
 
-		UICorner_4.CornerRadius = UDim.new(0, 6)
+		UICorner_4.CornerRadius = UDim.new(0, 4)
 		UICorner_4.Parent = colorInners
 
-		-- Saturation & Hue area
 		rgb.Name = "rgb"
 		rgb.Parent = colorInners
-		rgb.BackgroundTransparency = 1
-		rgb.Position = UDim2.new(0, 8, 0, 8)
-		rgb.Size = UDim2.new(0, 170, 0, 90)
+		rgb.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+		rgb.BackgroundTransparency = 1.000
+		rgb.Position = UDim2.new(-0.00146592979, 0, 0.0476190485, 0)
+		rgb.Size = UDim2.new(0, 160, 0, 80)
 		rgb.Image = "http://www.roblox.com/asset/?id=6523286724"
 
-		UICorner_5.CornerRadius = UDim.new(0, 6)
+		UICorner_5.CornerRadius = UDim.new(0, 4)
 		UICorner_5.Parent = rgb
 
 		rbgcircle.Name = "rbgcircle"
 		rbgcircle.Parent = rgb
-		rbgcircle.BackgroundTransparency = 1
-		rbgcircle.Size = UDim2.new(0, 16, 0, 16)
+		rbgcircle.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+		rbgcircle.BackgroundTransparency = 1.000
+		rbgcircle.Size = UDim2.new(0, 14, 0, 14)
+
 		rbgcircle.Image = "rbxassetid://3926309567"
 		rbgcircle.ImageColor3 = Color3.fromRGB(0, 0, 0)
 		rbgcircle.ImageRectOffset = Vector2.new(628, 420)
@@ -1783,19 +1808,21 @@ function Library:Create(xHubName)
 
 		darkness.Name = "darkness"
 		darkness.Parent = colorInners
-		darkness.BackgroundTransparency = 1
-		darkness.Position = UDim2.new(0, 190, 0, 10)
-		darkness.Size = UDim2.new(0, 20, 0, 85)
+		darkness.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+		darkness.BackgroundTransparency = 1.000
+		darkness.Position = UDim2.new(0.593658984, 0, 0.0571428575, 0)
+		darkness.Size = UDim2.new(0, 18, 0, 79)
 		darkness.Image = "http://www.roblox.com/asset/?id=6523291212"
 
-		UICorner_6.CornerRadius = UDim.new(0, 6)
+		UICorner_6.CornerRadius = UDim.new(0, 4)
 		UICorner_6.Parent = darkness
 
 		darkcircle.Name = "darkcircle"
 		darkcircle.Parent = darkness
 		darkcircle.AnchorPoint = Vector2.new(0.5, 0)
-		darkcircle.BackgroundTransparency = 1
-		darkcircle.Size = UDim2.new(0, 16, 0, 16)
+		darkcircle.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+		darkcircle.BackgroundTransparency = 1.000
+		darkcircle.Size = UDim2.new(0, 14, 0, 14)
 		darkcircle.Image = "rbxassetid://3926309567"
 		darkcircle.ImageColor3 = Color3.fromRGB(0, 0, 0)
 		darkcircle.ImageRectOffset = Vector2.new(628, 420)
@@ -1841,36 +1868,36 @@ function Library:Create(xHubName)
 
 
 		local ToggleBckg = Instance.new("TextButton")
-		local ToggleUICorner = Instance.new("UICorner")
+		local UICorner = Instance.new("UICorner")
 		local Icon = Instance.new("ImageLabel")
 		local UIScale = Instance.new("UIScale")
-		local togName_2 = Instance.new("TextLabel")
+
+		--Properties:
 
 		ToggleBckg.Name = "ToggleBckg"
 		ToggleBckg.Parent = colorInners
 		ToggleBckg.AnchorPoint = Vector2.new(0.5, 0.5)
-		ToggleBckg.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
-		ToggleBckg.Position = UDim2.new(0.8, 0, 0.2, 0)
-		ToggleBckg.Size = UDim2.new(0, 24, 0, 24)
+		ToggleBckg.BackgroundColor3 = Color3.fromRGB(29, 29, 29)
+		ToggleBckg.Position = UDim2.new(0.722793519, 0, 0.189809456, 0)
+		ToggleBckg.Size = UDim2.new(0, 20, 0, 20)
 		ToggleBckg.Text = ""
-		ToggleBckg.AutoButtonColor = false
 
-		ToggleUICorner.CornerRadius = UDim.new(0, 6)
-		ToggleUICorner.Parent = ToggleBckg
-		
-		
+		UICorner.CornerRadius = UDim.new(0, 5)
+		UICorner.Parent = ToggleBckg
+
 		Icon.Name = "Icon"
 		Icon.Parent = ToggleBckg
 		Icon.AnchorPoint = Vector2.new(0.5, 0.5)
-		Icon.BackgroundTransparency = 1
+		Icon.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+		Icon.BackgroundTransparency = 1.000
 		Icon.Position = UDim2.new(0.5, 0, 0.5, 0)
-		Icon.Size = UDim2.new(0, 24, 0, 24)
+		Icon.Size = UDim2.new(0, 20, 0, 20)
 		Icon.Image = "http://www.roblox.com/asset/?id=13319773302"
-		Icon.ImageColor3 = Color3.fromRGB(170, 170, 170)
-		Icon.ImageTransparency = 1
+		Icon.ImageColor3 = Color3.fromRGB(0, 0, 0)
+		Icon.ImageTransparency = 1.000
 
 		UIScale.Parent = Icon
-		UIScale.Scale = 0.8
+		UIScale.Scale = 0.800
 
 
 
@@ -1883,13 +1910,14 @@ function Library:Create(xHubName)
 
 		togName_2.Name = "togName"
 		togName_2.Parent = colorInners
-		togName_2.BackgroundTransparency = 1
-		togName_2.Position = UDim2.new(0.85, 0, 0.12, 0)
-		togName_2.Size = UDim2.new(0, 50, 0, 18)
+		togName_2.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+		togName_2.BackgroundTransparency = 1.000
+		togName_2.Position = UDim2.new(0.794234872, 0, 0.0904761925, 0)
+		togName_2.Size = UDim2.new(0, 74, 0, 14)
 		togName_2.Font = Enum.Font.GothamSemibold
 		togName_2.Text = "Rainbow"
-		togName_2.TextColor3 = Color3.fromRGB(255, 255, 255)
-		togName_2.TextSize = 14
+		togName_2.TextColor3 = Color3.fromRGB(255,255,255)
+		togName_2.TextSize = 14.000
 		togName_2.TextXAlignment = Enum.TextXAlignment.Left
 
 
