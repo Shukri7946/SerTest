@@ -217,38 +217,22 @@ end
 --example
 
 --[[
-
-fadeIn(exampleElement, duration)
-
-fadeOut(exampleElement, duration)
-
-slide(exampleElement, duration)
-
-scale(exampleElement, duration)
-
-rotate(exampleElement, duration)
-
-pulse(exampleElement, duration)
-
-shake(exampleElement, duration)
-
-colorChange(exampleElement, Color3.new(1, 0, 0), duration)
-
-bounce(exampleElement, duration)
-
-flip(exampleElement, duration)
-
-wobble(exampleElement, duration)
-
-fadeAndMove(exampleElement, duration)
-
-rotateAndScale(exampleElement, duration)
-
-flash(exampleElement, duration)
-
-expand(exampleElement, duration)
-
-contract(exampleElement, duration)
+fadeOut(frame, 1)
+fadeIn(frame, 1)
+slide(frame, 0.5)
+scale(frame, 0.5)
+rotate(frame, 0.4)
+pulse(frame, 1)
+shake(frame, 0.5)
+colorChange(frame, Color3.fromRGB(0, 128, 255), 0.6)
+bounce(frame, 0.6)
+flip(frame, 0.4)
+wobble(frame, 0.5)
+fadeAndMove(frame, 0.5)
+rotateAndScale(frame, 0.6)
+flash(frame, 0.4)
+expand(frame, 0.5)
+contract(frame, 0.5)
 
 
 ]]--
@@ -623,22 +607,30 @@ function Library:Create(xHubName)
 	Minimize.MouseButton1Click:Connect(function()
 		if minimized then
 			Menu:TweenSize(originalSize, Enum.EasingDirection.Out, Enum.EasingStyle.Quad, 0.3, true)
+
 			for _, child in pairs(Menu:GetChildren()) do
-				if child:IsA("Frame") or child:IsA("ScrollingFrame") then
+				-- Don't hide Topbar or Minimize button
+				if (child:IsA("Frame") or child:IsA("ScrollingFrame")) and child.Name ~= "Topbar" then
 					child.Visible = true
 				end
 			end
+
+			ImageLabel.Image = "rbxassetid://7733997870" -- Close icon
 		else
 			Menu:TweenSize(minimizedSize, Enum.EasingDirection.Out, Enum.EasingStyle.Quad, 0.3, true)
+
 			for _, child in pairs(Menu:GetChildren()) do
-				if child:IsA("Frame") or child:IsA("ScrollingFrame") then
+				if (child:IsA("GuiObject") ) and child.Name ~= "Topbar" then
 					child.Visible = false
 				end
 			end
-			Topbar.Visible = true -- Ensure the Topbar remains visible
+
+			ImageLabel.Image = "rbxassetid://6153965706" -- Open icon
 		end
+
 		minimized = not minimized
 	end)
+
 
 	Close.MouseButton1Click:Connect(function()
 
@@ -659,12 +651,12 @@ function Library:Create(xHubName)
 
 		if Menu.Visible then
 			-- Uncomment the desired fade-out effect
-			fadeOut(Menu, 0.3)  -- Fade out Main frame
+			-- fadeOut(Menu, 0.3)  -- Fade out Main frame
 
 			fadeOut(Topbar, 0.3)
 
 
-			--scale(Menu, 0.3)  -- Scale down Main frame
+			scale(Menu, 0.3)  -- Scale down Main frame
 			--rotate(Menu, 0.3)  -- Rotate Main frame
 			--pulse(Menu, 0.3)  -- Pulse Main frame
 			--shake(Menu, 0.3)  -- Shake Main frame
@@ -683,11 +675,9 @@ function Library:Create(xHubName)
 		else
 
 			-- Uncomment the desired fade-in effect
-			fadeIn(Menu, 0.3)  -- Fade in Main frame
+		--	fadeIn(Menu, 0.3)  -- Fade in Main frame
 
 			fadeIn(Topbar, 0.3)
-
-
 
 			--scale(Menu, 0.3)  -- Scale up Main frame
 			--rotate(Menu, 0.3)  -- Rotate Main frame
@@ -697,7 +687,7 @@ function Library:Create(xHubName)
 			--bounce(Menu, 0.3)  -- Bounce Main frame
 			--flip(Menu, 0.3)  -- Flip Main frame
 			--wobble(Menu, 0.3)  -- Wobble Main frame
-			--fadeAndMove(Menu, 0.3)  -- Fade and move Main frame
+			fadeAndMove(Menu, 0.3)  -- Fade and move Main frame
 			--rotateAndScale(Menu, 0.3)  -- Rotate and scale Main frame
 			--flash(Menu, 0.3)  -- Flash Main frame
 			--expand(Menu, 0.3)  -- Expand Main frame
@@ -711,26 +701,29 @@ function Library:Create(xHubName)
 
 
 	function Library:ToggleUI()
-		if  game.CoreGui
-			:FindFirstChild(xHubName).Enabled then 
-			game.CoreGui:FindFirstChild(xHubName).Enabled = false
-		else 
-			game.CoreGui:FindFirstChild(xHubName).Enabled = true
+		local ui = game.CoreGui:FindFirstChild(xHubName)
+		if ui then
+			ui.Enabled = not ui.Enabled
 		end
 	end
 
 
+
 	function Library:Destroy()
-		-- Fade out the Main frame and ShadowHolder frame
-		fadeOut(Menu, 0.3)
-		fadeOut(Topbar, 0.3)
-		fadeOut(Shadow, 0.3)
-		print("faded now waiting 0.3 seconds")
-		wait(0.3)  -- Delay to ensure fade out completes
-		print("Distroying screen gui...")
-		-- game.CoreGui:FindFirstChild(xHubName):Destroy()
-		game.CoreGui:FindFirstChild(xHubName):Destroy()
-		print("destroyed Screen GUI")
+		local ui = game.CoreGui:FindFirstChild(xHubName)
+		if ui then
+			if typeof(fadeOut) == "function" then
+				fadeOut(Menu, 0.3)
+				fadeOut(Topbar, 0.3)
+				fadeOut(Shadow, 0.3)
+			end
+
+			print("Destroying " .. xHubName .. "...")
+			ui:Destroy()
+			print("Destroyed " .. xHubName)
+		else
+			warn("UI not found: " .. tostring(xHubName))
+		end
 	end
 
 
@@ -887,7 +880,7 @@ function Library:Create(xHubName)
 			-- Show the selected tab frame
 			Left.Visible = true
 			Example.TextColor3 = Color3.fromRGB(4, 34, 40)
-			Example.BackgroundColor3 = Color3.fromRGB(17, 146, 172)
+			Example.BackgroundColor3 = Color3.fromRGB(20, 115, 215)
 		end)
 
 		return Holder
@@ -1077,23 +1070,21 @@ function Library:Create(xHubName)
 
 		Button.MouseEnter:Connect(function()
 			game:GetService("TweenService"):Create(Button, TweenInfo.new(0.1, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {
-				BackgroundColor3 = Color3.fromRGB(48, 51, 70)
+				BackgroundColor3 = Color3.fromRGB(20, 115, 215)
 			}):Play()
 		end)
-
+		
 		Button.MouseLeave:Connect(function()
 			game:GetService("TweenService"):Create(Button, TweenInfo.new(0.1, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {
 				BackgroundColor3 = Color3.fromRGB(35, 35, 35)
 			}):Play()
 		end)
 
-
 		function ButtonFunction:UpdateButton(newTitle)
 			TextLabel.Text = newTitle
 		end
 		return ButtonFunction
 	end
-
 
 
 	function Library:Label(parent, LabelText)
@@ -1174,11 +1165,18 @@ function Library:Create(xHubName)
 		local UICornerTextBox = Instance.new("UICorner")
 		UICornerTextBox.CornerRadius = UDim.new(0, 4)
 		UICornerTextBox.Parent = TextInput
+		
+		local textBstroke = UIStroke:Clone()
+		textBstroke.Parent = TextInput
+		
+		Container.MouseEnter:Connect(function()
+			TweenService:Create(textBstroke, TweenInfo.new(0.1), {Color = Color3.fromRGB(20, 115, 215)}):Play() -- 86, 34, 34
+		end)
 
-		if UIStroke then
-			UIStroke:Clone().Parent = TextInput
-		end
-
+		Container.MouseLeave:Connect(function()
+			TweenService:Create(textBstroke, TweenInfo.new(0.1), {Color = Color3.fromRGB(50, 50, 50)}):Play()
+		end)
+		
 		local minWidth = 50
 		local maxWidth = Container.AbsoluteSize.X * 0.6
 		local padding = 15
@@ -1539,9 +1537,12 @@ function Library:Create(xHubName)
 		Status.Size = UDim2.new(0.25, 0, 1, 0)
 		Status.Position = UDim2.new(0.75, 0, 0, 0)
 
-		UIStroke:Clone().Parent = Status
-		UIStroke:Clone().Parent = Keybind
-
+		local keyMstroke = 	UIStroke:Clone()
+		keyMstroke.Parent = Status
+		
+		local keystroke = UIStroke:Clone()
+		keystroke.Parent = Keybind
+		
 		local TextLabel_2 = Instance.new("TextLabel")
 		TextLabel_2.Parent = Status
 		TextLabel_2.BackgroundTransparency = 1
@@ -1552,7 +1553,16 @@ function Library:Create(xHubName)
 		TextLabel_2.TextScaled = true
 		TextLabel_2.TextWrapped = true
 		TextLabel_2.TextXAlignment = Enum.TextXAlignment.Right
+		
+		Keybind.MouseEnter:Connect(function()
+			TweenService:Create(keyMstroke, TweenInfo.new(0.1), {Color = Color3.fromRGB(20, 115, 215)}):Play() -- 86, 34, 34
+		end)
 
+		Keybind.MouseLeave:Connect(function()
+			TweenService:Create(keyMstroke, TweenInfo.new(0.1), {Color = Color3.fromRGB(50, 50, 50)}):Play()
+		end)
+		
+		
 		local currentKey = defaultKey
 
 		local function formatKey(input)
