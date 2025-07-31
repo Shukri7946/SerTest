@@ -792,49 +792,46 @@ function Library:Create(xHubName)
 	UIAspectRatioConstraint.AspectRatio = 1.404
 
 
-
 	local minimized = false
-	local originalSize = Menu.Size
-	local minimizedSize = UDim2.new(0, 525, 0, 36)
+	--local originalSize = Menu.Size
+	--local minimizedSize = UDim2.new(0, 525, 0, 36)
 
 	Minimize.MouseButton1Click:Connect(function()
 		if minimized then
-			Menu:TweenSize(originalSize, Enum.EasingDirection.Out, Enum.EasingStyle.Quad, 0.3, true)
-
-			for _, child in pairs(Menu:GetChildren()) do
-				-- Don't hide Topbar or Minimize button
-				if (child:IsA("Frame") or child:IsA("ScrollingFrame")) and child.Name ~= "Topbar" then
-					child.Visible = true
+			local tween = TweenService:Create(Menu, TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Size = originalSize})
+			tween:Play()
+			tween.Completed:Connect(function()
+				for _, child in pairs(Menu:GetChildren()) do
+					if (child:IsA("Frame") or child:IsA("ScrollingFrame")) and child.Name ~= "Topbar" then
+						child.Visible = true
+					end
 				end
-			end
-
+			end)
 			ImageLabel.Image = "rbxassetid://7733997870" -- Close icon
 		else
-			Menu:TweenSize(minimizedSize, Enum.EasingDirection.Out, Enum.EasingStyle.Quad, 0.3, true)
-
+			local tween = TweenService:Create(Menu, TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Size = minimizedSize})
+			tween:Play()
 			for _, child in pairs(Menu:GetChildren()) do
 				if (child:IsA("Frame") or child:IsA("ScrollingFrame")) and child.Name ~= "Topbar" then
 					child.Visible = false
 				end
 			end
-			
 			ImageLabel.Image = "http://www.roblox.com/asset/?id=6153965706" -- Open icon
 		end
 
 		minimized = not minimized
 	end)
 
-
+	
+	
 	Close.MouseButton1Click:Connect(function()
 		local ui = game.CoreGui:FindFirstChild(xHubName)
 		if ui then
-			if typeof(FadeOut) == "function" then
 				FadeOut(Menu, 0.3)
 				FadeOut(Topbar, 0.3)
 				FadeOut(Shadow, 0.3)
-			end
 
-			print("Destroying " .. xHubName .. "...")
+			print("Destroying " .. xHubName .. " ...")
 			ui:Destroy()
 			print("Destroyed " .. xHubName)
 		else
@@ -851,7 +848,7 @@ function Library:Create(xHubName)
 
 			FadeOut(Topbar, 0.3)
 
-			Scale(Menu, minimizedSize, 0.3)  -- Scale down Main frame
+		--	Scale(Menu, minimizedSize, 0.3)  -- Scale down Main frame
 			--rotate(Menu, 0.3)  -- Rotate Main frame
 			
 			--pulse(Menu, 0.3)  -- Pulse Main frame
@@ -875,7 +872,7 @@ function Library:Create(xHubName)
 
 			FadeIn(Topbar, 0.3)
 
-			Scale(Menu, originalSize, 0.3)  -- Scale up Main frame
+		--	Scale(Menu, originalSize, 0.3)  -- Scale up Main frame
 			
 			--rotate(Menu, 0.3)  -- Rotate Main frame
 			--pulse(Menu, 0.3)  -- Pulse Main frame
@@ -1348,7 +1345,7 @@ function Library:Create(xHubName)
 		LabCorner.CornerRadius = UDim.new(0, 5)
 		LabCorner.Parent = Label
 		
-		local Labstroke = UIStroke:Clone()
+		local Labstroke = Instance.new("UIStroke")
 		Labstroke.Parent = Label
 		
 		Label.MouseEnter:Connect(function()
@@ -1410,7 +1407,7 @@ function Library:Create(xHubName)
 		UICornerTextBox.CornerRadius = UDim.new(0, 4)
 		UICornerTextBox.Parent = TextInput
 		
-		local stroke = UIStroke:Clone()
+		local stroke = Instance.new("UIStroke")
 		stroke.Parent = Container
 		stroke.Color = Color3.fromRGB(50, 50, 50)
 		stroke.Thickness = 2
@@ -1430,13 +1427,13 @@ function Library:Create(xHubName)
 		local function updateWidth()
 			local containerMax = Container.AbsoluteSize.X * 0.6
 			local realMin = math.min(minWidthConst, containerMax)
-			local realMax = math.max(minWidthConst, containerMax)
+			local realMax = math.max(containerMax, realMin) -- Ensure realMax >= realMin
 			local textLength = #TextInput.Text
 			local desired = textLength * approxCharWidth + padding
 			local w = math.clamp(desired, realMin, realMax)
 			TextInput.Size = UDim2.new(0, w, 0, TextInput.AbsoluteSize.Y)
 		end
-
+		
 		-- Remove callback on text change for live typing if you want
 		TextInput:GetPropertyChangedSignal("Text"):Connect(function()
 			updateWidth()
@@ -1695,7 +1692,7 @@ function Library:Create(xHubName)
 		
 		Slider.MouseEnter:Connect(function()
 			TweenService:Create(UIStroke_2, TweenInfo.new(0.1), {Color = Color3.fromRGB(20, 115, 215)}):Play() -- 86, 34, 34
-			TweenService:Create(UIStroke_3, TweenInfo.new(0.1), {Color = Color3.fromRGB(20, 115, 215)}):Play() -- 86, 34, 34
+			TweenService:Create(UIStroke_3, TweenInfo.new(0.1), {Color = Color3.fromRGB(8, 45, 83)}):Play() -- 86, 34, 34
 
 			
 			
@@ -1774,7 +1771,8 @@ function Library:Create(xHubName)
 		Keybind.AutoButtonColor = false
 		Keybind.Text = ""
 		Keybind.Selectable = false
-
+		
+	
 		local UICorner = Instance.new("UICorner")
 		UICorner.CornerRadius = UDim.new(0, 5)
 		UICorner.Parent = Keybind
@@ -1898,7 +1896,7 @@ function Library:Create(xHubName)
 		local ms = game.Players.LocalPlayer:GetMouse()
 		local colorOpened = false
 		local colorElement = Instance.new("TextButton")
-		local UICorner = Instance.new("UICorner")
+		local UICornercol = Instance.new("UICorner")
 		local colorHeader = Instance.new("Frame")
 		local UICorner_2 = Instance.new("UICorner")
 		local touch = Instance.new("ImageLabel")
@@ -1939,7 +1937,7 @@ function Library:Create(xHubName)
 		colorElement.BackgroundTransparency = 1.000
 		colorElement.ClipsDescendants = true
 		colorElement.Position = UDim2.new(0, 0, 0.566834569, 0)
-		colorElement.Size = UDim2.new(0, 352, 0, 33)
+		colorElement.Size = UDim2.new(0, -20, 0, 33)
 		colorElement.AutoButtonColor = false
 		colorElement.Font = Enum.Font.SourceSans
 		colorElement.Text = ""
@@ -1996,8 +1994,8 @@ function Library:Create(xHubName)
 		end)
 
 
-		UICorner.CornerRadius = UDim.new(0, 4)
-		UICorner.Parent = colorElement
+		UICornercol.CornerRadius = UDim.new(0, 4)
+		UICornercol.Parent = colorElement
 
 		colorHeader.Name = "colorHeader"
 		colorHeader.Parent = colorElement
