@@ -739,6 +739,8 @@ function Library:Create(xHubName)
 		Example.Size = UDim2.new(0, 201, 0, 31)
 		Example.ZIndex = 6
 		Example.AutoButtonColor = false
+		Example.TextWrapped = true     
+
 		Example.Text = ""
 
 		UICorner.CornerRadius = UDim.new(0, 5)
@@ -996,6 +998,7 @@ function Library:Create(xHubName)
 		Button.Selectable = false
 		Button.Size = UDim2.new(1, -20, 0, 31)
 		Button.AutoButtonColor = true
+		Button.TextWrapped = true     
 		Button.Text = ""
 
 		UICorner.CornerRadius = UDim.new(0, 5)
@@ -1123,6 +1126,8 @@ function Library:Create(xHubName)
 		Textbox.Selectable = false
 		Textbox.Size = UDim2.new(1, -20, 0, 51)  -- Adjusted width to fit parent dynamically
 		Textbox.AutoButtonColor = false
+		Textbox.TextWrapped = true     
+
 		Textbox.Text = ""
 
 		-- Apply corner radius to Textbox
@@ -1208,6 +1213,8 @@ function Library:Create(xHubName)
 		Toggle.Size = UDim2.new(1, -20, 0, 31)
 		Toggle.Position = UDim2.new(0, 10, 0, 10)
 		Toggle.AutoButtonColor = false
+		Toggle.TextWrapped = true     
+
 		Toggle.Text = ""
 
 		local UICorner = Instance.new("UICorner", Toggle)
@@ -2553,6 +2560,8 @@ function Library:Create(xHubName)
 		Title.BackgroundTransparency = 1.000
 		Title.Size = UDim2.new(1, -35, 1, 0)
 		Title.Font = customFont
+		Title.TextWrapped = true     
+
 		Title.Text = dropdownName
 		Title.TextColor3 = Color3.fromRGB(193, 193, 193)
 		Title.TextSize = customFontSize
