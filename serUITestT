@@ -441,8 +441,21 @@ function Library:Create(xHubName)
 		end
 	end
 	
-	local tween = Menu:TweenSize(originalSize, Enum.EasingDirection.Out, Enum.EasingStyle.Quad, 0.3, true)
+--	local TweenService = game:GetService("TweenService")
 
+	-- hide all content-frames except Topbar
+	for _, child in ipairs(Menu:GetChildren()) do
+		if (child:IsA("Frame") or child:IsA("ScrollingFrame")) and child.Name ~= "Topbar" then
+			child.Visible = false
+		end
+	end
+
+	-- prepare tween to expand Menu
+	local tweenInfo = TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
+	local tween = TweenService:Create(Menu, tweenInfo, {Size = originalSize})
+	tween:Play()
+
+	-- when expansion finishes, show children
 	tween.Completed:Connect(function()
 		for _, child in ipairs(Menu:GetChildren()) do
 			if (child:IsA("Frame") or child:IsA("ScrollingFrame")) and child.Name ~= "Topbar" then
@@ -450,7 +463,7 @@ function Library:Create(xHubName)
 			end
 		end
 	end)
-	
+
 	UICorner.CornerRadius = UDim.new(0, 5)
 	UICorner.Parent = Menu
 
