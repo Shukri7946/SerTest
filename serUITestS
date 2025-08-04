@@ -14,10 +14,11 @@ local Library = {}
 -- Random UI Name
 local LibraryName = tostring(math.random(100000,200000))..tostring(math.random(100000,200000))..tostring(math.random(100000,200000))
 
+local UserInputService = game:GetService("UserInputService")
 
 function Library:Drag(obj)
-	local UserInputService = game:GetService("UserInputService")
-
+	assert(typeof(obj) == "Instance" and obj:IsA("GuiObject"), "obj must be a GuiObject")
+	
 	local gui = obj
 	local dragging = false
 	local dragStart
@@ -211,12 +212,15 @@ end
 
 -- Flash between two colors repeatedly
 local function Flash(element, color1, color2, duration)
-	local tweenInfo = TweenInfo.new(duration / 2, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut, -1, true)
-	local tween = TweenService:Create(element, tweenInfo, {BackgroundColor3 = color1})
-	tween:Play()
-	tween.Completed:Connect(function()
-		element.BackgroundColor3 = color2
-	end)
+	local tweenInfo = TweenInfo.new(duration / 2, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut)
+	while true do
+		local tween1 = TweenService:Create(element, tweenInfo, {BackgroundColor3 = color1})
+		tween1:Play()
+		tween1.Completed:Wait()
+		local tween2 = TweenService:Create(element, tweenInfo, {BackgroundColor3 = color2})
+		tween2:Play()
+		tween2.Completed:Wait()
+	end
 end
 
 -- Expand to targetSize
@@ -455,21 +459,21 @@ function Library:Create(xHubName)
 	local ImageButtonKCorner = Instance.new("UICorner")
 
 	function ScrollSize()
-		Holder2.CanvasSize = UDim2.new(0, 0, 0, UIListLayout.AbsoluteContentSize.Y)
+		local padding = Holder2.UIPadding.PaddingTop.Offset or 0
+		Holder2.CanvasSize = UDim2.new(0, 0, 0, UIListLayout.AbsoluteContentSize.Y + padding)
 	end
-
 
 	--Properties:
 	ScreenGui.Name = xHubName
 	ScreenGui.Parent = game.CoreGui
 	ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
-	
+
 	Library:Drag(Menu, Topbar)
 	Library:Drag(ImageButtonK)
-	
+
 	local originalSize = UDim2.new(0, 525, 0, 318)
 	local minimizedSize = UDim2.new(0, 525, 0, 36)
-	
+
 	LoadingFrame.Name = "LoadingFrame"
 	LoadingFrame.Parent = ScreenGui
 	LoadingFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
@@ -527,14 +531,14 @@ function Library:Create(xHubName)
 		while LoadingFrame.Parent do
 			LoadingLabel.Text = textArray[index]
 			index = index % #textArray + 1
-			wait(0.5)
+			task.wait(0.5)
 		end
 	end
 
 	local function animateProgressBar()
 		for i = 1, 100 do
 			ProgressBar.Size = UDim2.new(i / 100, 0, 1, 0)
-			wait(0.04)
+			task.wait(0.04)
 		end
 	end
 
@@ -543,16 +547,17 @@ function Library:Create(xHubName)
 
 	coroutine.resume(textCoroutine)
 	coroutine.resume(progressCoroutine)
-	
-	Rotate(LoadingImage, 0.5, 4)
 
+	--Rotate(LoadingImage, 0.5, 4)
+	Rotate(LoadingImage, 360, 0.5)
+	
 	wait(4) -- Simulating loading time
 
 	if LoadingFrame and LoadingFrame.Parent then
 		FadeOut(LoadingFrame, 0.3)
 		wait(1)
 		LoadingFrame:Destroy()
-	--	Menu:TweenSize(originalSize, Enum.EasingDirection.Out, Enum.EasingStyle.Quad, 0.3, true)
+		--	Menu:TweenSize(originalSize, Enum.EasingDirection.Out, Enum.EasingStyle.Quad, 0.3, true)
 
 	else
 		return
@@ -572,8 +577,8 @@ function Library:Create(xHubName)
 			child.Visible = false
 		end
 	end
-	
---	local TweenService = game:GetService("TweenService")
+
+	--	local TweenService = game:GetService("TweenService")
 
 	-- hide all content-frames except Topbar
 	for _, child in ipairs(Menu:GetChildren()) do
@@ -822,14 +827,14 @@ function Library:Create(xHubName)
 		minimized = not minimized
 	end)
 
-	
-	
+
+
 	Close.MouseButton1Click:Connect(function()
 		local ui = game.CoreGui:FindFirstChild(xHubName)
 		if ui then
-				FadeOut(Menu, 0.3)
-				FadeOut(Topbar, 0.3)
-				FadeOut(Shadow, 0.3)
+			FadeOut(Menu, 0.3)
+			FadeOut(Topbar, 0.3)
+			FadeOut(Shadow, 0.3)
 
 			print("Destroying " .. xHubName .. " ...")
 			ui:Destroy()
@@ -838,55 +843,20 @@ function Library:Create(xHubName)
 			warn("UI not found: " .. tostring(xHubName))
 		end
 	end)
-
+	
+	
+	local activeTween
 	ImageButtonK.MouseButton1Click:Connect(function()
-
-
+		if activeTween then
+			activeTween:Cancel()
+		end
 		if Menu.Visible then
-			-- Uncomment the desired fade-out effect
-			FadeOut(Menu, 0.3)  -- Fade out Main frame
-
-			FadeOut(Topbar, 0.3)
-
-		--	Scale(Menu, minimizedSize, 0.3)  -- Scale down Main frame
-			--rotate(Menu, 0.3)  -- Rotate Main frame
-			
-			--pulse(Menu, 0.3)  -- Pulse Main frame
-			--shake(Menu, 0.3)  -- Shake Main frame
-			--colorChange(Menu, 0.3)  -- Change color of Main frame
-			--bounce(Menu, 0.3)  -- Bounce Main frame
-			--flip(Menu, 0.3)  -- Flip Main frame
-			--wobble(Menu, 0.3)  -- Wobble Main frame
-			--fadeAndMove(Menu, 0.3)  -- Fade and move Main frame
-			--rotateAndScale(Menu, 0.3)  -- Rotate and scale Main frame
-			--flash(Menu, 0.3)  -- Flash Main frame
-			--expand(Menu, 0.3)  -- Expand Main frame
-			--contract(Menu, 0.3)  -- Contract Main frame
-
+			activeTween = FadeOut(Menu, 0.3)
+			activeTween = FadeOut(Topbar, 0.3)
 			Menu.Visible = false
-
 		else
-
-			-- Uncomment the desired fade-in effect
-			FadeIn(Menu, 0.3)  -- Fade in Main frame
-
-			FadeIn(Topbar, 0.3)
-
-		--	Scale(Menu, originalSize, 0.3)  -- Scale up Main frame
-			
-			--rotate(Menu, 0.3)  -- Rotate Main frame
-			--pulse(Menu, 0.3)  -- Pulse Main frame
-			--shake(Menu, 0.3)  -- Shake Main frame
-			--colorChange(Menu, 0.3)  -- Change color of Main frame
-			--bounce(Menu, 0.3)  -- Bounce Main frame
-			--flip(Menu, 0.3)  -- Flip Main frame
-			--wobble(Menu, 0.3)  -- Wobble Main frame
-		--	fadeAndMove(Menu, 0.3)  -- Fade and move Main frame
-			--rotateAndScale(Menu, 0.3)  -- Rotate and scale Main frame
-			--flash(Menu, 0.3)  -- Flash Main frame
-			--expand(Menu, 0.3)  -- Expand Main frame
-			--contract(Menu, 0.3)  -- Contract Main frame
-
+			activeTween = FadeIn(Menu, 0.3)
+			activeTween = FadeIn(Topbar, 0.3)
 			Menu.Visible = true
 		end
 	end)
@@ -911,7 +881,9 @@ function Library:Create(xHubName)
 				FadeOut(Topbar, 0.3)
 				FadeOut(Shadow, 0.3)
 			end
-
+			
+		
+			
 			print("Destroying " .. xHubName .. "...")
 			ui:Destroy()
 			print("Destroyed " .. xHubName)
@@ -1139,9 +1111,9 @@ function Library:Create(xHubName)
 		Text.TextXAlignment = Enum.TextXAlignment.Left
 
 
-	--	Slide(Notification, 0.5)
+		--	Slide(Notification, 0.5)
 		FadeIn(Notification, 0.5)
-		
+
 		Slide(Notification, UDim2.new(0.5, 0, 0.5, 0), 0.5)
 
 		wait(duration)
@@ -1193,7 +1165,8 @@ function Library:Create(xHubName)
 		if not isfile(path) then
 			return nil
 		end
-
+		
+		
 		local ok, contentOrErr = pcall(function()
 			return readfile(path)
 		end)
@@ -1201,7 +1174,13 @@ function Library:Create(xHubName)
 			warn("Failed to read config file:", contentOrErr)
 			return nil
 		end
-
+		
+		local success, result = pcall(HttpService.JSONDecode, contentOrErr)
+		if not success then
+			warn("Invalid JSON in config file: " .. tostring(result))
+			return nil
+		end
+		
 		local decodeOk, dataOrErr = pcall(function()
 			return HttpService:JSONDecode(contentOrErr)
 		end)
@@ -1212,7 +1191,6 @@ function Library:Create(xHubName)
 
 		return dataOrErr
 	end
-
 
 
 	function Library:Button(Parent, ButName, Callback)
@@ -1307,7 +1285,7 @@ function Library:Create(xHubName)
 				BackgroundColor3 = Color3.fromRGB(20, 115, 215)
 			}):Play()
 		end)
-		
+
 		Button.MouseLeave:Connect(function()
 			game:GetService("TweenService"):Create(Button, TweenInfo.new(0.1, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {
 				BackgroundColor3 = Color3.fromRGB(35, 35, 35)
@@ -1326,7 +1304,7 @@ function Library:Create(xHubName)
 		local labelFunctions = {}
 		local Label = Instance.new("TextLabel")
 		local LabCorner = Instance.new("UICorner")
-		
+
 		Label.Name = "Label"
 		Label.Parent = parent
 		Label.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
@@ -1336,19 +1314,19 @@ function Library:Create(xHubName)
 		Label.TextColor3 = Color3.fromRGB(193, 193, 193)
 		Label.TextSize = 12
 		Label.Font = Enum.Font.GothamMedium
-		
+
 		Label.TextWrapped = true       
-	--	Label.TextXAlignment = Enum.TextXAlignment.Left  
+		--	Label.TextXAlignment = Enum.TextXAlignment.Left  
 		Label.TextYAlignment = Enum.TextYAlignment.Center 
 		Label.TextTruncate = Enum.TextTruncate.None 
-		
+
 		LabCorner.CornerRadius = UDim.new(0, 5)
 		LabCorner.Parent = Label
-		
+
 		local Labstroke = Instance.new("UIStroke")
 		Labstroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
 		Labstroke.Parent = Label
-		
+
 		Label.MouseEnter:Connect(function()
 			TweenService:Create(Labstroke, TweenInfo.new(0.1), {Color = Color3.fromRGB(20, 115, 215)}):Play()
 		end)
@@ -1387,9 +1365,9 @@ function Library:Create(xHubName)
 		TitleLabel.AnchorPoint = Vector2.new(0, 0.5)
 		TitleLabel.Size = UDim2.new(0.5, -10, 1, 0)
 		TitleLabel.TextWrapped = true
-		
-		
-		
+
+
+
 		local TextInput = Instance.new("TextBox")
 		TextInput.Parent = Container
 		TextInput.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
@@ -1407,7 +1385,7 @@ function Library:Create(xHubName)
 		local UICornerTextBox = Instance.new("UICorner")
 		UICornerTextBox.CornerRadius = UDim.new(0, 4)
 		UICornerTextBox.Parent = TextInput
-		
+
 		local stroke = Instance.new("UIStroke")
 		stroke.Parent = Container
 		stroke.Color = Color3.fromRGB(50, 50, 50)
@@ -1419,8 +1397,8 @@ function Library:Create(xHubName)
 		TextInput.MouseLeave:Connect(function()
 			TweenService:Create(stroke, TweenInfo.new(0.1), {Color = Color3.fromRGB(50, 50, 50)}):Play()
 		end)
-		
-		
+
+
 		local minWidthConst = 50
 		local padding = 15
 		local approxCharWidth = 7
@@ -1434,7 +1412,7 @@ function Library:Create(xHubName)
 			local w = math.clamp(desired, realMin, realMax)
 			TextInput.Size = UDim2.new(0, w, 0, TextInput.AbsoluteSize.Y)
 		end
-		
+
 		-- Remove callback on text change for live typing if you want
 		TextInput:GetPropertyChangedSignal("Text"):Connect(function()
 			updateWidth()
@@ -1455,8 +1433,8 @@ function Library:Create(xHubName)
 		end
 	end
 
-	
-	
+
+
 	--toggle
 	function Library:Toggle(tab, toggleName, callback)
 		local TweenService = game:GetService("TweenService")
@@ -1570,12 +1548,17 @@ function Library:Create(xHubName)
 
 
 
-	function Library:Slider(parent, Name, Min, Max, Callback)
+	function Library:Slider(parent, Name, Min, Max, DefaultValue, Callback)
 		Name = Name or "Slider"
-		Callback = Callback or function() end
-		Min = Min or 16
-		Max = Max or 500
+		Min = tonumber(Min) or 16
+		Max = tonumber(Max) or 500
+		DefaultValue = tonumber(DefaultValue) or Min
 
+		if type(Callback) ~= "function" then
+			Callback = function() end
+		end
+		
+		
 		-- Create UI elements
 		local Slider = Instance.new("Frame")
 		local UICorner = Instance.new("UICorner")
@@ -1633,7 +1616,7 @@ function Library:Create(xHubName)
 
 		UICorner_2.CornerRadius = UDim.new(0, 6)
 		UICorner_2.Parent = Main
-		
+
 		UIStroke_2.Color = Color3.fromRGB(60, 60, 60)
 		UIStroke_2.Thickness = 1.5
 		UIStroke_2.Parent = Main
@@ -1683,27 +1666,24 @@ function Library:Create(xHubName)
 		UICorner_4.CornerRadius = UDim.new(0, 6)
 		UICorner_4.Parent = Shadow
 
-		-- Interact button properties
 		Interact.Name = "Interact"
 		Interact.Parent = Main
 		Interact.BackgroundTransparency = 1
 		Interact.Size = UDim2.new(1, 0, 1, 0)
 		Interact.ZIndex = 10
 		Interact.Text = ""
-		
-		Slider.MouseEnter:Connect(function()
-			TweenService:Create(UIStroke_2, TweenInfo.new(0.1), {Color = Color3.fromRGB(20, 115, 215)}):Play() -- 86, 34, 34
-			TweenService:Create(UIStroke_3, TweenInfo.new(0.1), {Color = Color3.fromRGB(14, 76, 139)}):Play() -- 86, 34, 34
 
+		Slider.MouseEnter:Connect(function()
+			TweenService:Create(UIStroke_2, TweenInfo.new(0.1), {Color = Color3.fromRGB(20, 115, 215)}):Play()
+			TweenService:Create(UIStroke_3, TweenInfo.new(0.1), {Color = Color3.fromRGB(14, 76, 139)}):Play()
 		end)
 
 		Slider.MouseLeave:Connect(function()
 			TweenService:Create(UIStroke_2, TweenInfo.new(0.1), {Color = Color3.fromRGB(60, 60, 60)}):Play()
 			TweenService:Create(UIStroke_3, TweenInfo.new(0.1), {Color = Color3.fromRGB(60, 60, 60)}):Play()
-
 		end)
-		
-		-- Slider logic
+
+		-- Logic
 		local currentValue = Min
 
 		local function updateValue(mouseX)
@@ -1711,15 +1691,19 @@ function Library:Create(xHubName)
 			local percent = math.clamp(relativeX / Main.AbsoluteSize.X, 0, 1)
 			local newValue = math.floor(percent * (Max - Min) + Min)
 			newValue = math.clamp(newValue, Min, Max)
-			Progress.Size = UDim2.new(percent, 0, 1, 0)
-			Information.Text = tostring(newValue)
-			currentValue = newValue
+
+			if newValue ~= currentValue then
+				currentValue = newValue
+				Progress.Size = UDim2.new(percent, 0, 1, 0)
+				Information.Text = tostring(newValue)
+			end
 		end
 
 		local function setProgress(value)
-			local percent = math.clamp((value - Min) / (Max - Min), 0, 1)
+			currentValue = math.clamp(value, Min, Max)
+			local percent = (currentValue - Min) / (Max - Min)
 			Progress.Size = UDim2.new(percent, 0, 1, 0)
-			Information.Text = tostring(value)
+			Information.Text = tostring(currentValue)
 		end
 
 		local moveConn, releaseConn
@@ -1727,35 +1711,37 @@ function Library:Create(xHubName)
 		Interact.InputBegan:Connect(function(input)
 			if input.UserInputType == Enum.UserInputType.MouseButton1 then
 				updateValue(input.Position.X)
-				moveConn = Interact.InputChanged:Connect(function(input)
-					if input.UserInputType == Enum.UserInputType.MouseMovement then
-						updateValue(input.Position.X)
-						-- Do NOT call Callback here
+
+				if moveConn then moveConn:Disconnect() end
+				if releaseConn then releaseConn:Disconnect() end
+
+				moveConn = Interact.InputChanged:Connect(function(moveInput)
+					if moveInput.UserInputType == Enum.UserInputType.MouseMovement then
+						updateValue(moveInput.Position.X)
 					end
 				end)
-				releaseConn = game:GetService("UserInputService").InputEnded:Connect(function(input)
-					if input.UserInputType == Enum.UserInputType.MouseButton1 then
+
+				releaseConn = UserInputService.InputEnded:Connect(function(endInput)
+					if endInput.UserInputType == Enum.UserInputType.MouseButton1 then
 						if moveConn then moveConn:Disconnect() end
 						if releaseConn then releaseConn:Disconnect() end
-						Callback(currentValue)  -- Call callback only once here on release
+						Callback(currentValue)
 					end
 				end)
 			end
 		end)
 
-		setProgress(Min)
-		Callback(Min)
+		-- Init
+		setProgress(DefaultValue)
+		Callback(DefaultValue)
+
 
 		return Slider
 	end
 
 
 
-
-
-
 	function Library:Keybind(tab, keybindName, defaultKey, callback)
-		local UserInputService = game:GetService("UserInputService")
 
 		keybindName = keybindName or "Keybind"
 		defaultKey = defaultKey or Enum.KeyCode.K
@@ -1770,8 +1756,8 @@ function Library:Create(xHubName)
 		Keybind.AutoButtonColor = false
 		Keybind.Text = ""
 		Keybind.Selectable = false
-		
-	
+
+
 		local UICorner = Instance.new("UICorner")
 		UICorner.CornerRadius = UDim.new(0, 5)
 		UICorner.Parent = Keybind
@@ -1793,18 +1779,18 @@ function Library:Create(xHubName)
 		Status.BackgroundTransparency = 1
 		Status.Size = UDim2.new(0.25, 0, 1, 0)
 		Status.Position = UDim2.new(0.75, 0, 0, 0)
-		
+
 
 		local statcor = Instance.new("UICorner")
 		statcor.CornerRadius = UDim.new(0, 4)
 		statcor.Parent = Status
-		
+
 		local keyMstroke = 	UIStroke:Clone()
 		keyMstroke.Parent = Status
-		
+
 		local keystroke = UIStroke:Clone()
 		keystroke.Parent = Keybind
-		
+
 		local TextLabel_2 = Instance.new("TextLabel")
 		TextLabel_2.Parent = Status
 		TextLabel_2.BackgroundTransparency = 1
@@ -1815,7 +1801,7 @@ function Library:Create(xHubName)
 		TextLabel_2.TextScaled = true
 		TextLabel_2.TextWrapped = true
 		TextLabel_2.TextXAlignment = Enum.TextXAlignment.Right
-		
+
 		Keybind.MouseEnter:Connect(function()
 			TweenService:Create(keyMstroke, TweenInfo.new(0.1), {Color = Color3.fromRGB(20, 115, 215)}):Play() -- 86, 34, 34
 		end)
@@ -1823,8 +1809,8 @@ function Library:Create(xHubName)
 		Keybind.MouseLeave:Connect(function()
 			TweenService:Create(keyMstroke, TweenInfo.new(0.1), {Color = Color3.fromRGB(50, 50, 50)}):Play()
 		end)
-		
-		
+
+
 		local currentKey = defaultKey
 
 		local function formatKey(input)
@@ -2336,7 +2322,12 @@ function Library:Create(xHubName)
 
 		ToggleBckg.MouseButton1Click:Connect(togglerainbow)
 		--
-		mouse.Move:connect(cp)
+		UserInputService.InputChanged:Connect(function(input)
+			if input.UserInputType == Enum.UserInputType.MouseMovement then
+				cp()
+			end
+		end)
+		
 		rgb.MouseButton1Down:connect(function()colorpicker=true end)
 		dark.MouseButton1Down:connect(function()darknesss=true end)
 		uis.InputEnded:Connect(function(input)
@@ -2799,7 +2790,7 @@ function Library:Create(xHubName)
 				selectedOptions = {options[1]}
 			end
 
-			
+
 			for i, option in ipairs(options) do
 				local optionButton = List:FindFirstChild("Option" .. i)
 				if optionButton then
@@ -3059,20 +3050,20 @@ function Library:Create(xHubName)
 				end
 
 				Option.MouseButton1Click:Connect(function()
-				--	if optionText ~= selectedOption then
-						-- Otherwise, select this option
-						selectedOption = optionText
-						SelectionIndicator.Visible = true
-						Option.BackgroundColor3 = selectedColor
+					--	if optionText ~= selectedOption then
+					-- Otherwise, select this option
+					selectedOption = optionText
+					SelectionIndicator.Visible = true
+					Option.BackgroundColor3 = selectedColor
 
-						-- Deselect all other options visually
-						for _, opt in ipairs(List:GetChildren()) do
-							if opt:IsA("TextButton") and opt ~= Option then
-								opt.BackgroundColor3 = defaultColor
-								opt.SelectionIndicator.Visible = false
-							end
+					-- Deselect all other options visually
+					for _, opt in ipairs(List:GetChildren()) do
+						if opt:IsA("TextButton") and opt ~= Option then
+							opt.BackgroundColor3 = defaultColor
+							opt.SelectionIndicator.Visible = false
 						end
-				--	end
+					end
+					--	end
 
 					updateTitle() -- Update the main dropdown title
 
