@@ -18,7 +18,7 @@ local UserInputService = game:GetService("UserInputService")
 
 function Library:Drag(obj)
 	assert(typeof(obj) == "Instance" and obj:IsA("GuiObject"), "obj must be a GuiObject")
-	
+
 	local gui = obj
 	local dragging = false
 	local dragStart
@@ -96,7 +96,7 @@ function FadeOut(element, duration)
 end
 
 -- Slide to targetPosition (UDim2)
-function Slide(element: GuiObject, targetPosition: UDim2, duration: number)
+function Slide(element, targetPosition, duration)
 	local tweenInfo = TweenInfo.new(duration, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
 	local tween = TweenService:Create(element, tweenInfo, {Position = targetPosition})
 	tween:Play()
@@ -104,7 +104,7 @@ function Slide(element: GuiObject, targetPosition: UDim2, duration: number)
 end
 
 -- Scale to targetSize (UDim2)
-function Scale(element: GuiObject, targetSize: UDim2, duration: number)
+function Scale(element, targetSize, duration)
 	local tweenInfo = TweenInfo.new(duration, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
 	local tween = TweenService:Create(element, tweenInfo, {Size = targetSize})
 	tween:Play()
@@ -112,12 +112,21 @@ function Scale(element: GuiObject, targetSize: UDim2, duration: number)
 end
 
 -- Rotate to targetRotation (degrees)
-function Rotate(element, targetRotation, duration)
+function Rotate(element, targetRotation, duration, continuous)
 	local tweenInfo = TweenInfo.new(duration, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut)
 	local tween = TweenService:Create(element, tweenInfo, {Rotation = targetRotation})
+
+	if continuous then
+		tween.Completed:Connect(function()
+			element.Rotation = 0
+			tween:Play()  -- Restart the tween
+		end)
+	end
+
 	tween:Play()
 	return tween
 end
+
 
 -- Pulse effect (scales up and down repeatedly)
 function Pulse(element, scaleFactor, duration)
@@ -548,10 +557,12 @@ function Library:Create(xHubName)
 	coroutine.resume(textCoroutine)
 	coroutine.resume(progressCoroutine)
 
-	--Rotate(LoadingImage, 0.5, 4)
-	Rotate(LoadingImage, 360, 0.5)
-	
-	wait(4) -- Simulating loading time
+	local rotationTween = Rotate(LoadingImage, 360, 0.5, true)
+
+	rotationTween:Cancel()
+	LoadingImage.Rotation = 0  
+
+	wait(4)
 
 	if LoadingFrame and LoadingFrame.Parent then
 		FadeOut(LoadingFrame, 0.3)
@@ -843,8 +854,8 @@ function Library:Create(xHubName)
 			warn("UI not found: " .. tostring(xHubName))
 		end
 	end)
-	
-	
+
+
 	local activeTween
 	ImageButtonK.MouseButton1Click:Connect(function()
 		if activeTween then
@@ -881,9 +892,9 @@ function Library:Create(xHubName)
 				FadeOut(Topbar, 0.3)
 				FadeOut(Shadow, 0.3)
 			end
-			
-		
-			
+
+
+
 			print("Destroying " .. xHubName .. "...")
 			ui:Destroy()
 			print("Destroyed " .. xHubName)
@@ -1165,8 +1176,8 @@ function Library:Create(xHubName)
 		if not isfile(path) then
 			return nil
 		end
-		
-		
+
+
 		local ok, contentOrErr = pcall(function()
 			return readfile(path)
 		end)
@@ -1174,13 +1185,13 @@ function Library:Create(xHubName)
 			warn("Failed to read config file:", contentOrErr)
 			return nil
 		end
-		
+
 		local success, result = pcall(HttpService.JSONDecode, contentOrErr)
 		if not success then
 			warn("Invalid JSON in config file: " .. tostring(result))
 			return nil
 		end
-		
+
 		local decodeOk, dataOrErr = pcall(function()
 			return HttpService:JSONDecode(contentOrErr)
 		end)
@@ -1557,8 +1568,8 @@ function Library:Create(xHubName)
 		if type(Callback) ~= "function" then
 			Callback = function() end
 		end
-		
-		
+
+
 		-- Create UI elements
 		local Slider = Instance.new("Frame")
 		local UICorner = Instance.new("UICorner")
@@ -2327,7 +2338,7 @@ function Library:Create(xHubName)
 				cp()
 			end
 		end)
-		
+
 		rgb.MouseButton1Down:connect(function()colorpicker=true end)
 		dark.MouseButton1Down:connect(function()darknesss=true end)
 		uis.InputEnded:Connect(function(input)
