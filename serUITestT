@@ -2732,14 +2732,16 @@ function Library:Create(xHubName)
 				Checkmark.ImageColor3 = Color3.fromRGB(0, 170, 255)
 				Checkmark.Visible = false
 				]]
-
+				
+				
+				
 				local Icon = Instance.new("ImageLabel", Checkbox)
 				Icon.Name = "Icon"
 				Icon.AnchorPoint = Vector2.new(0.5, 0.5)
 				Icon.BackgroundTransparency = 1.000
 				Icon.Position = UDim2.new(0.5, 0, 0.5, 0)
 				Icon.Size = UDim2.new(0, 20, 0, 20)
-				Icon.Image = "rbxassetid://3926309567"
+				Icon.Image = "rbxassetid://13319773302"
 				Icon.ImageColor3 = Color3.fromRGB(0, 0, 0)
 				Icon.ImageTransparency = 1.000
 
@@ -3119,12 +3121,21 @@ function Library:Create(xHubName)
 			toggleDropdown()
 		end)
 
-		-- Close dropdown when clicking outside
+		local function isMouseOverGui(guiObject)
+			local mouse = game:GetService("Players").LocalPlayer:GetMouse()
+			local guiPosition = guiObject.AbsolutePosition
+			local guiSize = guiObject.AbsoluteSize
+
+			return mouse.X >= guiPosition.X and mouse.X <= guiPosition.X + guiSize.X and
+				mouse.Y >= guiPosition.Y and mouse.Y <= guiPosition.Y + guiSize.Y
+		end
+
 		game:GetService("UserInputService").InputBegan:Connect(function(input, processed)
-			if not processed and input.UserInputType == Enum.UserInputType.MouseButton1 then
-				if isOpen and not Dropdown:IsDescendantOf(input:GetMouseTarget()) 
-					and not List:IsDescendantOf(input:GetMouseTarget())
-					and not SearchBox:IsDescendantOf(input:GetMouseTarget()) then
+			if not processed and (input.UserInputType == Enum.UserInputType.MouseButton1 
+				or input.UserInputType == Enum.UserInputType.Touch) then
+				if isOpen and not isMouseOverGui(Dropdown) 
+					and not isMouseOverGui(List)
+					and not isMouseOverGui(SearchBox) then
 					toggleDropdown(false)
 				end
 			end
