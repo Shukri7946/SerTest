@@ -1298,11 +1298,13 @@ function Library:Create(xHubName, themeName)
 		end
 		return tweens
 	end
-
-
+	
+	
+	local ui = ScreenGui or Library.LastUI
 	local activeTween = nil
 	local CloseACTween = nil
-
+	
+	
 	Close.MouseButton1Click:Connect(function()
 		if CloseACTween then
 			for _, tween in ipairs(CloseACTween) do
@@ -1310,9 +1312,9 @@ function Library:Create(xHubName, themeName)
 			end
 		end
 
-		local ui =  game:GetService("CoreGui"):FindFirstChild(xHubName)
+		--local ui =  game:GetService("CoreGui"):FindFirstChild(LibraryName)
 		if not ui then
-			warn("UI not found: " .. tostring(xHubName))
+			warn("UI not found: " .. tostring(LibraryName))
 			return
 		end
 
