@@ -652,17 +652,31 @@ function Library:Create(xHubName, themeName)
 	--	game:GetService("CoreGui")[LibraryName]:Destroy()
 --	end
 	
-	
+	local function findDescendant(parent, name)
+		if not parent then return nil end
+		for _, child in ipairs(parent:GetChildren()) do
+			if child.Name == name then
+				return child
+			else
+				local found = findDescendant(child, name)
+				if found then return found end
+			end
+		end
+		return nil
+	end
+
 	local uuidPattern = "^%x%x%x%x%x%x%x%x%-%x%x%x%x%-%x%x%x%x%-%x%x%x%x%-%x%x%x%x%x%x%x%x%x%x%x%x$"
+	local CoreGui = game:GetService("CoreGui")
+
 	for _, gui in ipairs(CoreGui:GetChildren()) do
 		if gui:IsA("ScreenGui") and gui.Name:match(uuidPattern) then
-			local menuS = gui:FindFirstChild("Menu")
-			local exampleContainerS = gui:FindFirstChild("ExampleContainer")
-			if exampleContainerS and exampleContainerS:FindFirstChild("PageHold") then
+			local exampleContainerS = findDescendant(gui, "ExampleContainer")
+			if exampleContainerS and findDescendant(exampleContainerS, "PageHold") then
 				gui:Destroy()
 			end
 		end
 	end
+
 	
 	
 	if Library.LastUI and Library.LastUI.Parent then
