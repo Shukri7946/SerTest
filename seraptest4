@@ -33,6 +33,7 @@ end
 --local LibraryName = tostring(math.random(100000,200000))..tostring(math.random(100000,200000))..tostring(math.random(100000,200000))
 
 local LibraryName = generateLibraryName()
+local CoreGui = game:GetService("CoreGui")
 
 
 Library.LastUI = nil
@@ -652,11 +653,25 @@ function Library:Create(xHubName, themeName)
 --	end
 	
 	
+	local uuidPattern = "^%x%x%x%x%x%x%x%x%-%x%x%x%x%-%x%x%x%x%-%x%x%x%x%-%x%x%x%x%x%x%x%x%x%x%x%x$"
+	for _, gui in ipairs(CoreGui:GetChildren()) do
+		if gui:IsA("ScreenGui") and gui.Name:match(uuidPattern) then
+			local menuS = gui:FindFirstChild("Menu")
+			local exampleContainerS = gui:FindFirstChild("ExampleContainer")
+			if exampleContainerS and exampleContainerS:FindFirstChild("PageHold") then
+				gui:Destroy()
+			end
+		end
+	end
+	
+	
 	if Library.LastUI and Library.LastUI.Parent then
 		Library.LastUI:Destroy()
-		Library.LastUI = nil       
+		Library.LastUI = nil
 		Library.LastLibraryName = nil
 	end
+	
+	
 	
 	local xHubName = xHubName or "Seraph Hub"
 	if themeName and self.Themes[themeName] then
