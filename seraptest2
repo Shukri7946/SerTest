@@ -11,8 +11,34 @@ end
 
 local Library = {}
 
+local function generateLibraryName()
+	local chars = "0123456789abcdef"
+	local segments = {8, 4, 4, 4, 12} -- classic UUID format: 8-4-4-4-12
+	local result = {}
+
+	for _, len in ipairs(segments) do
+		local segment = {}
+		for i = 1, len do
+			local index = math.random(1, #chars)
+			table.insert(segment, chars:sub(index, index))
+		end
+		table.insert(result, table.concat(segment))
+	end
+
+	return table.concat(result, "-")
+end
+
+
 -- Random UI Name
-local LibraryName = tostring(math.random(100000,200000))..tostring(math.random(100000,200000))..tostring(math.random(100000,200000))
+--local LibraryName = tostring(math.random(100000,200000))..tostring(math.random(100000,200000))..tostring(math.random(100000,200000))
+
+local LibraryName = generateLibraryName()
+
+
+Library.LastUI = nil
+Library.LastLibraryName = nil
+
+
 
 local UserInputService = game:GetService("UserInputService")
 
@@ -273,256 +299,256 @@ contract(frame, 0.5)
 
 --Mains
 Library.Themes = {
-	-- 🖤 DARK NEO
+	-- 🖤 DARK NEO (Enhanced)
 	Dark = {
-		Background = Color3.fromRGB(18, 18, 20),
-		Topbar = Color3.fromRGB(25, 25, 28),
-		Element = Color3.fromRGB(30, 30, 33),
-		ElementHover = Color3.fromRGB(50, 50, 55),
-		ElementActive = Color3.fromRGB(22, 22, 25),
+		Background = Color3.fromRGB(15, 15, 18),
+		Topbar = Color3.fromRGB(22, 22, 26),
+		Element = Color3.fromRGB(28, 28, 33),
+		ElementHover = Color3.fromRGB(38, 38, 45),
+		ElementActive = Color3.fromRGB(20, 20, 24),
 
-		Text = Color3.fromRGB(240, 240, 245),
-		TextSecondary = Color3.fromRGB(180, 180, 185),
-		TextMuted = Color3.fromRGB(120, 120, 125),
+		Text = Color3.fromRGB(248, 248, 252),
+		TextSecondary = Color3.fromRGB(200, 200, 210),
+		TextMuted = Color3.fromRGB(140, 140, 150),
 		TextHover = Color3.fromRGB(255, 255, 255),
 
-		Accent = Color3.fromRGB(0, 153, 255),
-		AccentHover = Color3.fromRGB(0, 180, 255),
-		Success = Color3.fromRGB(0, 255, 120),
+		Accent = Color3.fromRGB(0, 160, 255),
+		AccentHover = Color3.fromRGB(30, 180, 255),
+		Success = Color3.fromRGB(40, 220, 130),
 
-		Stroke = Color3.fromRGB(50, 50, 55),
-		StrokeHover = Color3.fromRGB(80, 80, 90),
-		StrokeActive = Color3.fromRGB(0, 153, 255),
+		Stroke = Color3.fromRGB(45, 45, 52),
+		StrokeHover = Color3.fromRGB(65, 65, 75),
+		StrokeActive = Color3.fromRGB(0, 160, 255),
 
-		TabBackground = Color3.fromRGB(25, 25, 28),
-		TabText = Color3.fromRGB(220, 220, 230),
-		TabHover = Color3.fromRGB(45, 45, 50),
-		TabActive = Color3.fromRGB(0, 153, 255),
-		Icon = Color3.fromRGB(200, 200, 210)
+		TabBackground = Color3.fromRGB(22, 22, 26),
+		TabText = Color3.fromRGB(230, 230, 240),
+		TabHover = Color3.fromRGB(42, 42, 48),
+		TabActive = Color3.fromRGB(0, 160, 255),
+		Icon = Color3.fromRGB(210, 210, 220)
 	},
 
-	-- ☀️ LIGHT FROST
+	-- ☀️ LIGHT FROST (Enhanced)
 	Light = {
-		Background = Color3.fromRGB(248, 248, 250),
-		Topbar = Color3.fromRGB(235, 235, 240),
+		Background = Color3.fromRGB(242, 244, 248),
+		Topbar = Color3.fromRGB(230, 233, 240),
 		Element = Color3.fromRGB(255, 255, 255),
-		ElementHover = Color3.fromRGB(240, 240, 245),
-		ElementActive = Color3.fromRGB(225, 225, 230),
+		ElementHover = Color3.fromRGB(245, 247, 250),
+		ElementActive = Color3.fromRGB(235, 238, 245),
 
-		Text = Color3.fromRGB(25, 25, 30),
-		TextSecondary = Color3.fromRGB(80, 80, 90),
-		TextMuted = Color3.fromRGB(130, 130, 140),
+		Text = Color3.fromRGB(20, 20, 25),
+		TextSecondary = Color3.fromRGB(70, 75, 85),
+		TextMuted = Color3.fromRGB(120, 125, 135),
 		TextHover = Color3.fromRGB(0, 0, 0),
 
-		Accent = Color3.fromRGB(10, 132, 255),
-		AccentHover = Color3.fromRGB(0, 150, 255),
-		Success = Color3.fromRGB(0, 180, 90),
+		Accent = Color3.fromRGB(10, 120, 220),
+		AccentHover = Color3.fromRGB(20, 140, 240),
+		Success = Color3.fromRGB(30, 170, 80),
 
-		Stroke = Color3.fromRGB(210, 210, 220),
-		StrokeHover = Color3.fromRGB(180, 180, 190),
-		StrokeActive = Color3.fromRGB(0, 120, 215),
+		Stroke = Color3.fromRGB(200, 205, 215),
+		StrokeHover = Color3.fromRGB(170, 175, 185),
+		StrokeActive = Color3.fromRGB(10, 120, 220),
 
-		TabBackground = Color3.fromRGB(245, 245, 250),
-		TabText = Color3.fromRGB(35, 35, 40),
-		TabHover = Color3.fromRGB(230, 230, 235),
-		TabActive = Color3.fromRGB(10, 132, 255),
-		Icon = Color3.fromRGB(60, 60, 70)
+		TabBackground = Color3.fromRGB(240, 242, 247),
+		TabText = Color3.fromRGB(30, 35, 45),
+		TabHover = Color3.fromRGB(225, 228, 235),
+		TabActive = Color3.fromRGB(10, 120, 220),
+		Icon = Color3.fromRGB(80, 85, 95)
 	},
 
-	-- 💜 VIOLET DREAM
+	-- 💜 VIOLET DREAM (Enhanced)
 	Purple = {
-		Background = Color3.fromRGB(28, 20, 35),
-		Topbar = Color3.fromRGB(40, 28, 60),
-		Element = Color3.fromRGB(55, 40, 80),
-		ElementHover = Color3.fromRGB(75, 55, 105),
-		ElementActive = Color3.fromRGB(45, 30, 70),
+		Background = Color3.fromRGB(24, 16, 32),
+		Topbar = Color3.fromRGB(36, 24, 48),
+		Element = Color3.fromRGB(48, 32, 64),
+		ElementHover = Color3.fromRGB(64, 44, 84),
+		ElementActive = Color3.fromRGB(40, 26, 52),
 
-		Text = Color3.fromRGB(230, 220, 240),
-		TextSecondary = Color3.fromRGB(190, 170, 210),
+		Text = Color3.fromRGB(240, 230, 250),
+		TextSecondary = Color3.fromRGB(200, 180, 220),
 		TextMuted = Color3.fromRGB(150, 130, 170),
-		TextHover = Color3.fromRGB(255, 240, 255),
+		TextHover = Color3.fromRGB(255, 245, 255),
 
-		Accent = Color3.fromRGB(180, 100, 255),
-		AccentHover = Color3.fromRGB(210, 130, 255),
-		Success = Color3.fromRGB(130, 255, 180),
+		Accent = Color3.fromRGB(160, 80, 240),
+		AccentHover = Color3.fromRGB(180, 100, 255),
+		Success = Color3.fromRGB(120, 220, 160),
 
-		Stroke = Color3.fromRGB(80, 60, 100),
-		StrokeHover = Color3.fromRGB(110, 90, 130),
-		StrokeActive = Color3.fromRGB(180, 100, 255),
+		Stroke = Color3.fromRGB(68, 48, 84),
+		StrokeHover = Color3.fromRGB(88, 68, 104),
+		StrokeActive = Color3.fromRGB(160, 80, 240),
 
-		TabBackground = Color3.fromRGB(45, 30, 70),
-		TabText = Color3.fromRGB(215, 190, 245),
-		TabHover = Color3.fromRGB(70, 50, 95),
-		TabActive = Color3.fromRGB(180, 100, 255),
-		Icon = Color3.fromRGB(200, 180, 230)
+		TabBackground = Color3.fromRGB(36, 24, 48),
+		TabText = Color3.fromRGB(225, 200, 245),
+		TabHover = Color3.fromRGB(56, 40, 72),
+		TabActive = Color3.fromRGB(160, 80, 240),
+		Icon = Color3.fromRGB(210, 190, 230)
 	},
 
-	-- 🔵 CYBER BLUE
+	-- 🔵 CYBER BLUE (Enhanced)
 	Cyber = {
-		Background = Color3.fromRGB(10, 14, 20),
-		Topbar = Color3.fromRGB(15, 20, 28),
-		Element = Color3.fromRGB(25, 32, 45),
-		ElementHover = Color3.fromRGB(40, 50, 65),
-		ElementActive = Color3.fromRGB(20, 25, 35),
+		Background = Color3.fromRGB(8, 12, 18),
+		Topbar = Color3.fromRGB(12, 18, 26),
+		Element = Color3.fromRGB(20, 28, 40),
+		ElementHover = Color3.fromRGB(32, 42, 58),
+		ElementActive = Color3.fromRGB(16, 22, 32),
 
-		Text = Color3.fromRGB(220, 230, 255),
-		TextSecondary = Color3.fromRGB(170, 180, 200),
-		TextMuted = Color3.fromRGB(130, 140, 160),
+		Text = Color3.fromRGB(230, 240, 255),
+		TextSecondary = Color3.fromRGB(180, 195, 215),
+		TextMuted = Color3.fromRGB(130, 145, 165),
 		TextHover = Color3.fromRGB(255, 255, 255),
 
-		Accent = Color3.fromRGB(0, 190, 255),
-		AccentHover = Color3.fromRGB(0, 210, 255),
-		Success = Color3.fromRGB(0, 255, 180),
+		Accent = Color3.fromRGB(0, 180, 240),
+		AccentHover = Color3.fromRGB(20, 200, 255),
+		Success = Color3.fromRGB(0, 220, 160),
 
-		Stroke = Color3.fromRGB(35, 45, 60),
-		StrokeHover = Color3.fromRGB(55, 65, 85),
-		StrokeActive = Color3.fromRGB(0, 190, 255),
+		Stroke = Color3.fromRGB(32, 40, 56),
+		StrokeHover = Color3.fromRGB(48, 58, 78),
+		StrokeActive = Color3.fromRGB(0, 180, 240),
 
-		TabBackground = Color3.fromRGB(15, 20, 28),
-		TabText = Color3.fromRGB(180, 200, 220),
-		TabHover = Color3.fromRGB(40, 50, 65),
-		TabActive = Color3.fromRGB(0, 190, 255),
-		Icon = Color3.fromRGB(170, 180, 200)
+		TabBackground = Color3.fromRGB(12, 18, 26),
+		TabText = Color3.fromRGB(190, 210, 230),
+		TabHover = Color3.fromRGB(32, 42, 58),
+		TabActive = Color3.fromRGB(0, 180, 240),
+		Icon = Color3.fromRGB(180, 200, 220)
 	},
 
-	-- 🧊 GLACIER BLUE
+	-- 🧊 GLACIER BLUE (Enhanced)
 	Glacier = {
-		Background = Color3.fromRGB(220, 230, 240),
-		Topbar = Color3.fromRGB(200, 210, 225),
-		Element = Color3.fromRGB(235, 240, 250),
-		ElementHover = Color3.fromRGB(210, 225, 240),
-		ElementActive = Color3.fromRGB(190, 210, 230),
+		Background = Color3.fromRGB(225, 235, 245),
+		Topbar = Color3.fromRGB(210, 222, 235),
+		Element = Color3.fromRGB(240, 245, 252),
+		ElementHover = Color3.fromRGB(220, 230, 242),
+		ElementActive = Color3.fromRGB(200, 215, 232),
 
-		Text = Color3.fromRGB(35, 45, 55),
-		TextSecondary = Color3.fromRGB(80, 95, 110),
-		TextMuted = Color3.fromRGB(120, 135, 150),
-		TextHover = Color3.fromRGB(10, 10, 10),
+		Text = Color3.fromRGB(30, 40, 52),
+		TextSecondary = Color3.fromRGB(75, 90, 105),
+		TextMuted = Color3.fromRGB(115, 130, 145),
+		TextHover = Color3.fromRGB(10, 15, 20),
 
-		Accent = Color3.fromRGB(0, 180, 255),
-		AccentHover = Color3.fromRGB(0, 200, 255),
-		Success = Color3.fromRGB(0, 180, 120),
+		Accent = Color3.fromRGB(0, 160, 220),
+		AccentHover = Color3.fromRGB(20, 180, 240),
+		Success = Color3.fromRGB(30, 170, 100),
 
-		Stroke = Color3.fromRGB(180, 200, 220),
-		StrokeHover = Color3.fromRGB(150, 170, 190),
-		StrokeActive = Color3.fromRGB(0, 180, 255),
+		Stroke = Color3.fromRGB(185, 200, 215),
+		StrokeHover = Color3.fromRGB(155, 170, 185),
+		StrokeActive = Color3.fromRGB(0, 160, 220),
 
-		TabBackground = Color3.fromRGB(210, 220, 230),
-		TabText = Color3.fromRGB(30, 40, 55),
-		TabHover = Color3.fromRGB(225, 235, 245),
-		TabActive = Color3.fromRGB(0, 180, 255),
-		Icon = Color3.fromRGB(70, 90, 110)
+		TabBackground = Color3.fromRGB(215, 225, 238),
+		TabText = Color3.fromRGB(35, 45, 60),
+		TabHover = Color3.fromRGB(230, 238, 248),
+		TabActive = Color3.fromRGB(0, 160, 220),
+		Icon = Color3.fromRGB(85, 100, 120)
 	},
 
-	-- 🟢 MINT PULSE
+	-- 🟢 MINT PULSE (Enhanced - Fixed Contrast)
 	Green = {
-		Background = Color3.fromRGB(20, 30, 20),
-		Topbar = Color3.fromRGB(30, 45, 30),
-		Element = Color3.fromRGB(45, 60, 45),
-		ElementHover = Color3.fromRGB(70, 90, 70),
-		ElementActive = Color3.fromRGB(35, 45, 35),
+		Background = Color3.fromRGB(18, 28, 18),
+		Topbar = Color3.fromRGB(26, 40, 26),
+		Element = Color3.fromRGB(40, 55, 40),
+		ElementHover = Color3.fromRGB(60, 80, 60),
+		ElementActive = Color3.fromRGB(30, 40, 30),
 
-		Text = Color3.fromRGB(220, 245, 220),
-		TextSecondary = Color3.fromRGB(180, 205, 180),
-		TextMuted = Color3.fromRGB(150, 170, 150),
-		TextHover = Color3.fromRGB(240, 255, 240),
-
-		Accent = Color3.fromRGB(80, 255, 120),
-		AccentHover = Color3.fromRGB(100, 255, 140),
-		Success = Color3.fromRGB(80, 255, 100),
-
-		Stroke = Color3.fromRGB(70, 90, 70),
-		StrokeHover = Color3.fromRGB(100, 120, 100),
-		StrokeActive = Color3.fromRGB(80, 255, 120),
-
-		TabBackground = Color3.fromRGB(30, 45, 30),
-		TabText = Color3.fromRGB(200, 240, 200),
-		TabHover = Color3.fromRGB(60, 85, 60),
-		TabActive = Color3.fromRGB(80, 255, 120),
-		Icon = Color3.fromRGB(180, 220, 180)
-	},
-
-	-- 🔥 CRIMSON VOID
-	Crimson = {
-		Background = Color3.fromRGB(25, 10, 15),
-		Topbar = Color3.fromRGB(35, 15, 25),
-		Element = Color3.fromRGB(50, 20, 30),
-		ElementHover = Color3.fromRGB(75, 35, 50),
-		ElementActive = Color3.fromRGB(40, 15, 25),
-
-		Text = Color3.fromRGB(255, 220, 230),
-		TextSecondary = Color3.fromRGB(200, 170, 180),
-		TextMuted = Color3.fromRGB(150, 120, 130),
-		TextHover = Color3.fromRGB(255, 240, 245),
-
-		Accent = Color3.fromRGB(255, 70, 100),
-		AccentHover = Color3.fromRGB(255, 100, 130),
-		Success = Color3.fromRGB(255, 130, 160),
-
-		Stroke = Color3.fromRGB(80, 40, 50),
-		StrokeHover = Color3.fromRGB(110, 60, 70),
-		StrokeActive = Color3.fromRGB(255, 70, 100),
-
-		TabBackground = Color3.fromRGB(35, 15, 25),
-		TabText = Color3.fromRGB(255, 180, 200),
-		TabHover = Color3.fromRGB(70, 25, 40),
-		TabActive = Color3.fromRGB(255, 70, 100),
-		Icon = Color3.fromRGB(255, 180, 200)
-	},
-
-	-- 🌅 SUNSET ORANGE
-	Orange = {
-		Background = Color3.fromRGB(30, 15, 10),
-		Topbar = Color3.fromRGB(45, 20, 15),
-		Element = Color3.fromRGB(60, 30, 20),
-		ElementHover = Color3.fromRGB(85, 45, 35),
-		ElementActive = Color3.fromRGB(40, 20, 15),
-
-		Text = Color3.fromRGB(255, 220, 200),
-		TextSecondary = Color3.fromRGB(210, 180, 160),
-		TextMuted = Color3.fromRGB(150, 120, 100),
-		TextHover = Color3.fromRGB(255, 240, 220),
-
-		Accent = Color3.fromRGB(255, 120, 30),
-		AccentHover = Color3.fromRGB(255, 150, 50),
-		Success = Color3.fromRGB(255, 200, 60),
-
-		Stroke = Color3.fromRGB(90, 45, 25),
-		StrokeHover = Color3.fromRGB(120, 60, 35),
-		StrokeActive = Color3.fromRGB(255, 120, 30),
-
-		TabBackground = Color3.fromRGB(45, 20, 15),
-		TabText = Color3.fromRGB(255, 180, 140),
-		TabHover = Color3.fromRGB(70, 30, 20),
-		TabActive = Color3.fromRGB(255, 120, 30),
-		Icon = Color3.fromRGB(255, 160, 120)
-	},
-
-	-- 🌊 OCEAN WAVE
-	Ocean = {
-		Background = Color3.fromRGB(10, 25, 35),
-		Topbar = Color3.fromRGB(15, 35, 50),
-		Element = Color3.fromRGB(25, 50, 70),
-		ElementHover = Color3.fromRGB(40, 70, 95),
-		ElementActive = Color3.fromRGB(15, 35, 50),
-
-		Text = Color3.fromRGB(200, 235, 245),
-		TextSecondary = Color3.fromRGB(160, 190, 210),
-		TextMuted = Color3.fromRGB(120, 140, 160),
+		Text = Color3.fromRGB(230, 250, 230),
+		TextSecondary = Color3.fromRGB(190, 215, 190),
+		TextMuted = Color3.fromRGB(140, 160, 140),
 		TextHover = Color3.fromRGB(255, 255, 255),
 
-		Accent = Color3.fromRGB(0, 170, 255),
-		AccentHover = Color3.fromRGB(0, 200, 255),
-		Success = Color3.fromRGB(0, 255, 180),
+		Accent = Color3.fromRGB(70, 220, 100),
+		AccentHover = Color3.fromRGB(90, 240, 120),
+		Success = Color3.fromRGB(80, 230, 110),
 
-		Stroke = Color3.fromRGB(40, 60, 80),
-		StrokeHover = Color3.fromRGB(70, 90, 110),
-		StrokeActive = Color3.fromRGB(0, 170, 255),
+		Stroke = Color3.fromRGB(60, 75, 60),
+		StrokeHover = Color3.fromRGB(85, 105, 85),
+		StrokeActive = Color3.fromRGB(70, 220, 100),
 
-		TabBackground = Color3.fromRGB(15, 35, 50),
-		TabText = Color3.fromRGB(180, 220, 240),
-		TabHover = Color3.fromRGB(40, 70, 95),
-		TabActive = Color3.fromRGB(0, 170, 255),
-		Icon = Color3.fromRGB(160, 200, 220)
+		TabBackground = Color3.fromRGB(26, 40, 26),
+		TabText = Color3.fromRGB(210, 240, 210),
+		TabHover = Color3.fromRGB(50, 70, 50),
+		TabActive = Color3.fromRGB(70, 220, 100),
+		Icon = Color3.fromRGB(190, 220, 190)
+	},
+
+	-- 🔥 CRIMSON VOID (Enhanced)
+	Crimson = {
+		Background = Color3.fromRGB(22, 8, 12),
+		Topbar = Color3.fromRGB(32, 12, 20),
+		Element = Color3.fromRGB(45, 16, 25),
+		ElementHover = Color3.fromRGB(65, 28, 40),
+		ElementActive = Color3.fromRGB(35, 12, 20),
+
+		Text = Color3.fromRGB(255, 230, 235),
+		TextSecondary = Color3.fromRGB(210, 180, 190),
+		TextMuted = Color3.fromRGB(150, 120, 130),
+		TextHover = Color3.fromRGB(255, 245, 247),
+
+		Accent = Color3.fromRGB(235, 60, 90),
+		AccentHover = Color3.fromRGB(255, 80, 110),
+		Success = Color3.fromRGB(235, 120, 140),
+
+		Stroke = Color3.fromRGB(70, 32, 42),
+		StrokeHover = Color3.fromRGB(95, 50, 60),
+		StrokeActive = Color3.fromRGB(235, 60, 90),
+
+		TabBackground = Color3.fromRGB(32, 12, 20),
+		TabText = Color3.fromRGB(255, 190, 205),
+		TabHover = Color3.fromRGB(58, 20, 32),
+		TabActive = Color3.fromRGB(235, 60, 90),
+		Icon = Color3.fromRGB(240, 190, 200)
+	},
+
+	-- 🌅 SUNSET ORANGE (Enhanced)
+	Orange = {
+		Background = Color3.fromRGB(26, 12, 8),
+		Topbar = Color3.fromRGB(40, 18, 12),
+		Element = Color3.fromRGB(55, 26, 18),
+		ElementHover = Color3.fromRGB(75, 40, 28),
+		ElementActive = Color3.fromRGB(35, 16, 12),
+
+		Text = Color3.fromRGB(255, 230, 210),
+		TextSecondary = Color3.fromRGB(220, 190, 170),
+		TextMuted = Color3.fromRGB(160, 130, 110),
+		TextHover = Color3.fromRGB(255, 245, 230),
+
+		Accent = Color3.fromRGB(235, 100, 20),
+		AccentHover = Color3.fromRGB(255, 130, 40),
+		Success = Color3.fromRGB(235, 180, 50),
+
+		Stroke = Color3.fromRGB(80, 40, 22),
+		StrokeHover = Color3.fromRGB(105, 55, 30),
+		StrokeActive = Color3.fromRGB(235, 100, 20),
+
+		TabBackground = Color3.fromRGB(40, 18, 12),
+		TabText = Color3.fromRGB(255, 190, 150),
+		TabHover = Color3.fromRGB(62, 26, 18),
+		TabActive = Color3.fromRGB(235, 100, 20),
+		Icon = Color3.fromRGB(240, 170, 130)
+	},
+
+	-- 🌊 OCEAN WAVE (Enhanced)
+	Ocean = {
+		Background = Color3.fromRGB(8, 22, 32),
+		Topbar = Color3.fromRGB(12, 32, 46),
+		Element = Color3.fromRGB(20, 45, 65),
+		ElementHover = Color3.fromRGB(35, 65, 90),
+		ElementActive = Color3.fromRGB(12, 32, 46),
+
+		Text = Color3.fromRGB(210, 240, 250),
+		TextSecondary = Color3.fromRGB(170, 200, 220),
+		TextMuted = Color3.fromRGB(130, 150, 170),
+		TextHover = Color3.fromRGB(255, 255, 255),
+
+		Accent = Color3.fromRGB(0, 160, 230),
+		AccentHover = Color3.fromRGB(20, 180, 250),
+		Success = Color3.fromRGB(0, 220, 160),
+
+		Stroke = Color3.fromRGB(35, 55, 75),
+		StrokeHover = Color3.fromRGB(60, 80, 100),
+		StrokeActive = Color3.fromRGB(0, 160, 230),
+
+		TabBackground = Color3.fromRGB(12, 32, 46),
+		TabText = Color3.fromRGB(190, 225, 245),
+		TabHover = Color3.fromRGB(35, 65, 90),
+		TabActive = Color3.fromRGB(0, 160, 230),
+		Icon = Color3.fromRGB(170, 210, 230)
 	}
 }
 
@@ -621,18 +647,25 @@ end
 function Library:Create(xHubName, themeName)
 
 
-	if  game.Players.LocalPlayer.PlayerGui:FindFirstChild(xHubName) then
-		 game.Players.LocalPlayer.PlayerGui[xHubName]:Destroy()
+	--if  game:GetService("CoreGui"):FindFirstChild(LibraryName) then
+	--	game:GetService("CoreGui")[LibraryName]:Destroy()
+--	end
+	
+	
+	if Library.LastUI and Library.LastUI.Parent then
+		Library.LastUI:Destroy()
+		Library.LastUI = nil       
+		Library.LastLibraryName = nil
 	end
-
+	
 	local xHubName = xHubName or "Seraph Hub"
 	if themeName and self.Themes[themeName] then
 		self.CurrentTheme = themeName
 	end
 
 	local currentTheme = self.Themes[self.CurrentTheme]
-	
-	
+
+
 	local ScreenGui = Instance.new("ScreenGui")
 	local Menu = Instance.new("Frame")
 	local UICorner = Instance.new("UICorner")
@@ -681,13 +714,17 @@ function Library:Create(xHubName, themeName)
 	end
 
 	--Properties:
-	ScreenGui.Name = xHubName
-	ScreenGui.Parent =  game.Players.LocalPlayer.PlayerGui
+	ScreenGui.Name = LibraryName
+	ScreenGui.Parent =  game:GetService("CoreGui")
 	ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 
 	Library:Drag(Menu, Topbar)
 	Library:Drag(ImageButtonK)
-
+	
+	Library.LastUI = ScreenGui
+	Library.LastLibraryName = LibraryName
+	
+	
 	local originalSize = UDim2.new(0, 525, 0, 318)
 	local minimizedSize = UDim2.new(0, 525, 0, 36)
 
@@ -739,8 +776,8 @@ function Library:Create(xHubName, themeName)
 	UIStroke:Clone().Parent = LoadingImage
 	UIStroke:Clone().Parent = LoadingLabel
 	UIStroke:Clone().Parent = ProgressBar
-	
-	
+
+
 	-- After creating each UI element, register it for theme support
 	self:RegisterObject(Menu, {BackgroundColor3 = "Background"})
 	self:RegisterObject(Topbar, {BackgroundColor3 = "Topbar"})
@@ -755,8 +792,8 @@ function Library:Create(xHubName, themeName)
 	self:RegisterObject(UIPadding_2, {}) -- no color needed
 	self:RegisterObject(ExampleContainer, {BackgroundColor3 = "Element"})
 	self:RegisterObject(PageHold, {}) -- folder, no color needed
-	
-	
+
+
 	-- Register loading UI elements for theme support
 	if LoadingFrame then
 		self:RegisterObject(LoadingFrame, {BackgroundColor3 = "Background"})
@@ -774,8 +811,8 @@ function Library:Create(xHubName, themeName)
 		self:RegisterObject(ProgressBar, {BackgroundColor3 = "Accent"})
 	end
 
-	
-	
+
+
 
 	local function cycleLoadingText()
 		local textArray = {"Loading.", "Loading..", "Loading..."}
@@ -991,11 +1028,11 @@ function Library:Create(xHubName, themeName)
 	--UIGradient.Color = ColorSequence.new{
 	--	ColorSequenceKeypoint.new(0.00, Color3.fromRGB(40, 40, 40)),
 	--	ColorSequenceKeypoint.new(1.00, Color3.fromRGB(20, 20, 20))
---	}
---	UIGradient.Parent = Menu
-	
-	
-	
+	--	}
+	--	UIGradient.Parent = Menu
+
+
+
 	local Shadow = Instance.new("Frame")
 	local Image = Instance.new("ImageLabel")
 
@@ -1051,9 +1088,9 @@ function Library:Create(xHubName, themeName)
 	local UIAspectRatioConstraint = Instance.new("UIAspectRatioConstraint")
 	UIAspectRatioConstraint.Parent = ImageButtonK
 	UIAspectRatioConstraint.AspectRatio = 1.404
-	
-	
-	
+
+
+
 	-- Register ALL main UI elements
 	if Menu then
 		self:RegisterObject(Menu, {BackgroundColor3 = "Background"})
@@ -1168,7 +1205,7 @@ function Library:Create(xHubName, themeName)
 			self:RegisterObject(child, {Color = "Stroke"})
 		end
 	end
-	
+
 	--[[
 	-- Register UIGradient with theme colors
 	if UIGradient then
@@ -1185,12 +1222,12 @@ function Library:Create(xHubName, themeName)
 		table.insert(self.ThemeChangeCallbacks, updateGradient)
 	end
 	]]
-	
-	
-	
-	
-	
-	
+
+
+
+
+
+
 	--local originalSize = Menu.Size
 	--local minimizedSize = UDim2.new(0, 525, 0, 36)
 	local minimized = false
@@ -1273,7 +1310,7 @@ function Library:Create(xHubName, themeName)
 			end
 		end
 
-		local ui =  game.Players.LocalPlayer.PlayerGui:FindFirstChild(xHubName)
+		local ui =  game:GetService("CoreGui"):FindFirstChild(xHubName)
 		if not ui then
 			warn("UI not found: " .. tostring(xHubName))
 			return
@@ -1317,7 +1354,7 @@ function Library:Create(xHubName, themeName)
 
 
 	function Library:ToggleUI()
-		local ui =  game.Players.LocalPlayer.PlayerGui:FindFirstChild(xHubName)
+		local ui =  game:GetService("CoreGui"):FindFirstChild(xHubName)
 
 		if not ui then
 			warn("UI not found: " .. tostring(xHubName))
@@ -1352,7 +1389,7 @@ function Library:Create(xHubName, themeName)
 
 
 	function Library:Destroy()
-		local ui =  game.Players.LocalPlayer.PlayerGui:FindFirstChild(xHubName)
+		local ui =  game:GetService("CoreGui"):FindFirstChild(xHubName)
 		if ui then
 			if Menu and Menu.Parent then
 				Library:Tween(Menu, {BackgroundTransparency = 1}, 0.3)
@@ -1379,20 +1416,19 @@ function Library:Create(xHubName, themeName)
 			self:SetTheme(selected)
 		end)
 
-		-- Set current theme as default
 		themeDropdown:Setdrop(self.CurrentTheme)
 
 		return themeDropdown
 	end
-	
-	
-	
+
+
+
 	function Library:Tab(TabNam, TabIcon)
 		local TabNam = TabNam or "Tab"
 		local TabIcon = TabIcon 
 		local activeTab = nil
-		
-		
+
+
 		--Tab button
 
 		local Example = Instance.new("TextButton")
@@ -1413,8 +1449,8 @@ function Library:Create(xHubName, themeName)
 		Example.AutoButtonColor = false
 		Example.TextWrapped = true     
 		Example.Text = ""
-		
-		
+
+
 		UICorner.CornerRadius = UDim.new(0, 5)
 		UICorner.Parent = Example
 
@@ -1429,7 +1465,7 @@ function Library:Create(xHubName, themeName)
 		TabTitle.Text = TabNam
 		TabTitle.TextColor3 = Library:GetThemeColor("TabText")
 		TabTitle.TextSize = 12.000
-		
+
 		IconImage.Name = "Icon"
 		IconImage.Parent = Example
 		IconImage.BackgroundTransparency = 1
@@ -1437,8 +1473,8 @@ function Library:Create(xHubName, themeName)
 		IconImage.Position = UDim2.new(1, -26, 0.5, -8) -- right side of button
 		IconImage.Image = TabIcon or "" -- allow nil icon
 		IconImage.ImageColor3 = Library:GetThemeColor("TabText")
-		
-		
+
+
 		-- Gui to Lua
 		-- Version: 3.2
 
@@ -1529,15 +1565,15 @@ function Library:Create(xHubName, themeName)
 		Size()
 		Holder.ChildAdded:Connect(Size)
 		Holder.ChildRemoved:Connect(Size)
-		
+
 		-- Register the main tab button
-		self:RegisterObject(Example, {BackgroundColor3 = "Element"})
+		self:RegisterObject(Example, {BackgroundColor3 = "TabBackground"})
 		self:RegisterObject(TextLabel, {TextColor3 = "Text"})
 		self:RegisterObject(TabTitle, {TextColor3 = "TabText"})
 
 		self:RegisterObject(UIStroke, {Color = "Stroke"})
-		
-		
+
+
 		-- Register the tab frame
 		self:RegisterObject(Left, {BackgroundColor3 = "Background"})
 		self:RegisterObject(ExampleSection, {BackgroundColor3 = "TabBackground"})
@@ -1546,8 +1582,27 @@ function Library:Create(xHubName, themeName)
 		self:RegisterObject(TabTitle, {TextColor3 = "TabText"})
 
 		self:RegisterObject(Holder, {BackgroundColor3 = "Background"})
-
 		
+		
+		local function RefreshTabs()
+			local theme = Library.Themes[Library.CurrentTheme]
+			for _, button in pairs(Holder2:GetChildren()) do
+				if button:IsA("TextButton") then
+					local title = button:FindFirstChildOfClass("TextLabel")
+					local icon = button:FindFirstChild("Icon")
+					if button == activeTab then
+						button.BackgroundColor3 = theme.TabActive
+					else
+						button.BackgroundColor3 = theme.TabBackground
+					end
+					if title then title.TextColor3 = theme.TabText end
+					if icon then icon.ImageColor3 = theme.TabText end
+				end
+			end
+		end
+		
+		
+
 		Example.MouseEnter:Connect(function()
 			local _, theme = Library:GetTheme()
 			if activeTab ~= Example then
@@ -1559,8 +1614,8 @@ function Library:Create(xHubName, themeName)
 				Library:Tween(UIStroke, {Color = theme.StrokeHover}, 0.15)
 			end
 		end)
-		
-		
+
+
 		Example.MouseLeave:Connect(function()
 			local _, theme = Library:GetTheme()
 			if activeTab ~= Example then
@@ -1600,22 +1655,21 @@ function Library:Create(xHubName, themeName)
 			Example.BackgroundColor3 = theme.TabActive
 			TextLabel.TextColor3 = theme.TabText
 			TabTitle.TextColor3 = theme.TabText
-
 			IconImage.ImageColor3 = theme.TabText
-
 			activeTab = Example
+			RefreshTabs()
 		end)
-
-
+		
+		
 		return Holder
 	end
-	
-	
-	
-	
-	
-	
-	
+
+
+
+
+
+
+
 	--Noitfy
 	do
 		local Notifications = {}
@@ -1639,22 +1693,31 @@ function Library:Create(xHubName, themeName)
 			end
 		end
 
-		function Library:ShowNotify(title, text, duration, typeName, iconId, customTheme)
+		function Library:ShowNotify(title, text, duration, typeName, iconId)
 			duration = duration or 3
 			typeName = typeName or "Default"
 
-			local accentColor = (customTheme and customTheme.Color) or NotificationThemes[typeName] or NotificationThemes.Default
+			local accentColor = NotificationThemes[typeName] or NotificationThemes.Default
+
+			local NotificationSounds = {
+				Success = "rbxassetid://9118823103", -- pleasant "success" chime
+				Error   = "rbxassetid://9118828565", -- short error buzz
+				Info    = "rbxassetid://9118831354", -- soft info tone
+				Warning = "rbxassetid://9118833695", -- alert tone
+				Default = "rbxassetid://9118835701"  -- neutral pop
+			}
 
 			local ScreenGui = Instance.new("ScreenGui")
 			ScreenGui.Name = "Notification_" .. title
 			ScreenGui.ResetOnSpawn = false
 			ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
-			ScreenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
-
+			ScreenGui.Parent = game:GetService("CoreGui")
+			
+			
 			local Notification = Instance.new("Frame")
 			Notification.Name = "Notification"
 			Notification.Parent = ScreenGui
-			Notification.BackgroundColor3 = (customTheme and customTheme.Background) or self:GetThemeColor("Element")
+			Notification.BackgroundColor3 = self:GetThemeColor("Element"):Lerp(accentColor, 0.1)
 			Notification.BorderSizePixel = 0
 			Notification.Size = UDim2.new(0, 300, 0, 70)
 			Notification.AnchorPoint = Vector2.new(1, 1)
@@ -1666,7 +1729,7 @@ function Library:Create(xHubName, themeName)
 			Corner.Parent = Notification
 
 			local UIStroke = Instance.new("UIStroke")
-			UIStroke.Color = (customTheme and customTheme.Stroke) or self:GetThemeColor("Stroke")
+			UIStroke.Color = accentColor:Lerp(self:GetThemeColor("Stroke"), 0.3)
 			UIStroke.Thickness = 1.5
 			UIStroke.Parent = Notification
 
@@ -1690,7 +1753,7 @@ function Library:Create(xHubName, themeName)
 			TitleLabel.Size = UDim2.new(0.88, 0, 0.3, 0)
 			TitleLabel.Font = Enum.Font.GothamSemibold
 			TitleLabel.Text = title
-			TitleLabel.TextColor3 = (customTheme and customTheme.Text) or self:GetThemeColor("Text")
+			TitleLabel.TextColor3 = self:GetThemeColor("Text")
 			TitleLabel.TextSize = 14
 			TitleLabel.TextXAlignment = Enum.TextXAlignment.Left
 
@@ -1702,13 +1765,12 @@ function Library:Create(xHubName, themeName)
 			TextLabel.Size = UDim2.new(0.88, 0, 0.4, 0)
 			TextLabel.Font = Enum.Font.Gotham
 			TextLabel.Text = text
-			TextLabel.TextColor3 = (customTheme and customTheme.TextSecondary) or self:GetThemeColor("TextSecondary")
+			TextLabel.TextColor3 = self:GetThemeColor("TextSecondary")
 			TextLabel.TextSize = 12
 			TextLabel.TextWrapped = true
 			TextLabel.TextXAlignment = Enum.TextXAlignment.Left
 			TextLabel.TextYAlignment = Enum.TextYAlignment.Top
 
-			-- Auto-size notification based on text
 			TextLabel:GetPropertyChangedSignal("TextBounds"):Connect(function()
 				local newHeight = math.clamp(TextLabel.TextBounds.Y + 30, 70, 200)
 				Notification.Size = UDim2.new(Notification.Size.X.Scale, Notification.Size.X.Offset, 0, newHeight)
@@ -1722,7 +1784,6 @@ function Library:Create(xHubName, themeName)
 				UpdateStackPositions(self)
 			end)
 
-			-- Optional icon
 			local Icon
 			if iconId then
 				Icon = Instance.new("ImageLabel")
@@ -1738,7 +1799,6 @@ function Library:Create(xHubName, themeName)
 				TextLabel.Position = UDim2.new(0.08, 0, 0.45, 0)
 			end
 
-			-- Progress bar
 			local ProgressBar = Instance.new("Frame")
 			ProgressBar.Name = "ProgressBar"
 			ProgressBar.Parent = Notification
@@ -1752,28 +1812,35 @@ function Library:Create(xHubName, themeName)
 			ProgressCorner.CornerRadius = UDim.new(0, 1.5)
 			ProgressCorner.Parent = ProgressBar
 
-			-- Register objects for theme updates
+			if self.NotificationSounds ~= false then
+				local sound = Instance.new("Sound")
+				sound.SoundId = NotificationSounds[typeName] or NotificationSounds.Default
+				sound.Volume = 0.7
+				sound.PlayOnRemove = true
+				sound.Parent = ScreenGui
+				sound:Destroy() -- triggers playback instantly
+			end
+
 			self:RegisterObject(Notification, {BackgroundColor3 = "Element"})
 			self:RegisterObject(UIStroke, {Color = "Stroke"})
 			self:RegisterObject(TitleLabel, {TextColor3 = "Text"})
 			self:RegisterObject(TextLabel, {TextColor3 = "TextSecondary"})
-			self:RegisterObject(Accent, {BackgroundColor3 = "Accent"})
-			self:RegisterObject(ProgressBar, {BackgroundColor3 = "Accent"})
+
+			Accent.BackgroundColor3 = accentColor
+			ProgressBar.BackgroundColor3 = accentColor
 			if Icon then
-				self:RegisterObject(Icon, {ImageColor3 = "Accent"})
+				Icon.ImageColor3 = accentColor
 			end
 
-			-- Add to stack
 			table.insert(Notifications, {Frame = Notification, Gui = ScreenGui})
 			UpdateStackPositions(self)
 
-			-- Animate in
-			self:Tween(Notification, {BackgroundTransparency = 0, Position = UDim2.new(1, -20, 1, -20)}, 0.35, Enum.EasingStyle.Quad)
+			Notification.Position = UDim2.new(1, -20, 1, 40)
+			self:Tween(Notification, {BackgroundTransparency = 0, Position = UDim2.new(1, -20, 1, -20)}, 0.45, Enum.EasingStyle.Back)
 
-			-- Animate progress bar
 			self:Tween(ProgressBar, {Size = UDim2.new(0, 0, 0, 3)}, duration, Enum.EasingStyle.Linear)
 
-			-- Wait duration then slide down and remove
+
 			task.delay(duration, function()
 				self:Tween(Notification, {BackgroundTransparency = 1, Position = UDim2.new(1, -20, 1, 100)}, 0.3, Enum.EasingStyle.Quad)
 				task.delay(0.35, function()
@@ -1787,8 +1854,8 @@ function Library:Create(xHubName, themeName)
 					if ScreenGui then ScreenGui:Destroy() end
 				end)
 			end)
-
-			-- Remove oldest if exceeding max
+			
+			
 			if #Notifications > MaxVisible then
 				local oldest = table.remove(Notifications, 1)
 				if oldest and oldest.Gui then
@@ -1797,8 +1864,9 @@ function Library:Create(xHubName, themeName)
 				UpdateStackPositions(self)
 			end
 		end
-	end
-
+end
+	
+	
 
 
 
@@ -1859,7 +1927,6 @@ function Library:Create(xHubName, themeName)
 
 
 
-	-- Button Creation
 	function Library:Button(Parent, ButName, Callback)
 		local ButName = ButName or "Button"
 		local ButtonFunction = {}
@@ -1876,7 +1943,6 @@ function Library:Create(xHubName, themeName)
 		local UIStroke = Instance.new("UIStroke")
 		local ClickSound = Instance.new("Sound")
 
-		-- Main Button
 		Button.Name = "Button"
 		Button.Parent = Parent
 		Button.BackgroundColor3 = Library:GetThemeColor("Element")
@@ -1895,7 +1961,6 @@ function Library:Create(xHubName, themeName)
 		UIStroke.Thickness = 1.5
 		UIStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
 
-		-- Text
 		TextLabel.Parent = Button
 		TextLabel.BackgroundTransparency = 1
 		TextLabel.Size = UDim2.new(0.8, 0, 1, 0)
@@ -1908,7 +1973,6 @@ function Library:Create(xHubName, themeName)
 		UIPadding.Parent = TextLabel
 		UIPadding.PaddingLeft = UDim.new(0, 12)
 
-		-- Status / Icon container
 		Status.Name = "Status"
 		Status.Parent = Button
 		Status.BackgroundTransparency = 1
@@ -1933,7 +1997,6 @@ function Library:Create(xHubName, themeName)
 		ThingStroke.Color = Library:GetThemeColor("Stroke")
 		ThingStroke.Thickness = 1.5
 
-		-- Icon
 		ImageLabel.Parent = ActualThing
 		ImageLabel.AnchorPoint = Vector2.new(0.5, 0.5)
 		ImageLabel.BackgroundTransparency = 1
@@ -1945,18 +2008,20 @@ function Library:Create(xHubName, themeName)
 		UIScale.Parent = ImageLabel
 		UIScale.Scale = 0.85
 
-		-- Click sound
 		ClickSound.SoundId = "rbxassetid://9114262381"
 		ClickSound.Volume = 0.4
 		ClickSound.Parent = Button
 
-		-- Register theme objects
 		self:RegisterObject(Button, {BackgroundColor3 = "Element"})
 		self:RegisterObject(TextLabel, {TextColor3 = "Text"})
 		self:RegisterObject(UIStroke, {Color = "Stroke"})
 		self:RegisterObject(ActualThing, {BackgroundColor3 = "Element"})
+		self:RegisterObject(ImageLabel, {ImageColor3 = "Icon"})
 
-		-- Hover effect
+		
+		
+		
+		
 		Button.MouseEnter:Connect(function()
 			Library:Tween(Button, {BackgroundColor3 = Library:GetThemeColor("ElementHover")}, 0.15)
 			Library:Tween(UIStroke, {Color = Library:GetThemeColor("StrokeHover")}, 0.15)
@@ -1969,7 +2034,6 @@ function Library:Create(xHubName, themeName)
 			Library:Tween(TextLabel, {TextColor3 = Library:GetThemeColor("Text")}, 0.15)
 		end)
 
-		-- Click effect
 		Button.MouseButton1Click:Connect(function()
 			ClickSound:Play()
 			Library:Tween(Button, {BackgroundColor3 = Library:GetThemeColor("ElementPressed")}, 0.1)
@@ -1983,7 +2047,6 @@ function Library:Create(xHubName, themeName)
 			Callback()
 		end)
 
-		-- Button API
 		function ButtonFunction:UpdateButton(newTitle)
 			TextLabel.Text = newTitle
 		end
@@ -2011,8 +2074,8 @@ function Library:Create(xHubName, themeName)
 		return ButtonFunction
 	end
 
-	
-	
+
+
 	function Library:Label(parent, LabelText)
 		local LabelText = LabelText or "Label"
 		local labelFunctions = {}
@@ -2054,7 +2117,6 @@ function Library:Create(xHubName, themeName)
 		})
 		self:RegisterObject(LabStroke, {Color = "Stroke"})
 
-		-- Hover effects
 		Label.MouseEnter:Connect(function()
 			Library:Tween(Label, {BackgroundColor3 = Library:GetThemeColor("ElementHover")}, 0.2)
 			Library:Tween(LabStroke, {Color = Library:GetThemeColor("StrokeHover")}, 0.2)
@@ -2139,16 +2201,14 @@ function Library:Create(xHubName, themeName)
 		Stroke.Color = Library:GetThemeColor("Stroke")
 		Stroke.Thickness = 1.5
 
-		-- Register objects for theme updates
 		self:RegisterObject(Container, {BackgroundColor3 = "Element"})
 		self:RegisterObject(TitleLabel, {TextColor3 = "Text"})
 		self:RegisterObject(TextInput, {TextColor3 = "Text"})
 		self:RegisterObject(Stroke, {Color = "Stroke"})
 		self:RegisterObject(InputStroke, {Color = "Stroke"})
-		
-		
-		
-		-- Hover & focus effects
+
+
+
 		TextInput.MouseEnter:Connect(function()
 			Library:Tween(TextInput, {BackgroundColor3 = Library:GetThemeColor("ElementHover")}, 0.15)
 			Library:Tween(InputStroke, {Color = Library:GetThemeColor("StrokeHover")}, 0.15)
@@ -2183,7 +2243,6 @@ function Library:Create(xHubName, themeName)
 			Library:Tween(Stroke, {Color = Library:GetThemeColor("Stroke")}, 0.15)
 		end)
 
-		-- Dynamic width adjustment
 		local minWidth, padding, approxCharWidth = 50, 15, 7
 		local function updateWidth()
 			local containerMax = Container.AbsoluteSize.X * 0.6
@@ -2204,7 +2263,6 @@ function Library:Create(xHubName, themeName)
 
 		updateWidth()
 
-		-- Return textbox and manual submit function
 		return TextInput, function()
 			callback(TextInput.Text, true)
 			updateWidth()
@@ -2315,14 +2373,15 @@ function Library:Create(xHubName, themeName)
 		PulseCorner.CornerRadius = UDim.new(0, 4)
 		PulseCorner.Parent = PulseEffect
 
-		-- Theme registration
 		self:RegisterObject(Toggle, {BackgroundColor3 = "Element"})
 		self:RegisterObject(TextLabel, {TextColor3 = "Text"})
 		self:RegisterObject(UIStroke, {Color = "Stroke"})
-		self:RegisterObject(ToggleBckg, {BackgroundColor3 = "Element"})
+		self:RegisterObject(ToggleBckg, {BackgroundColor3 = "ElementHover"})
 		self:RegisterObject(Icon, {ImageColor3 = "Success"})
 		self:RegisterObject(PulseEffect, {BackgroundColor3 = "Success"})
-
+		
+		
+		
 		local isToggled = false
 
 		local function updateVisual()
@@ -2333,10 +2392,11 @@ function Library:Create(xHubName, themeName)
 			else
 				Icon.ImageTransparency = 1
 				Icon.ImageColor3 = Library:GetThemeColor("TextMuted")
-				ToggleBckg.BackgroundColor3 = Library:GetThemeColor("Element")
+				ToggleBckg.BackgroundColor3 = Library:GetThemeColor("ElementHover")
 			end
 		end
-
+		
+		
 		local function playToggleAnimation()
 			ClickSound:Play()
 			PulseEffect.Visible = true
@@ -2361,7 +2421,6 @@ function Library:Create(xHubName, themeName)
 
 		Toggle.MouseButton1Click:Connect(toggleState)
 
-		-- Hover effects
 		Toggle.MouseEnter:Connect(function()
 			HoverSound:Play()
 			Library:Tween(Toggle, {BackgroundColor3 = Library:GetThemeColor("ElementHover")}, 0.15)
@@ -2703,7 +2762,6 @@ function Library:Create(xHubName, themeName)
 			end
 		end)
 
-		-- Hover effects
 		Keybind.MouseEnter:Connect(function()
 			Library:Tween(Keybind, {BackgroundColor3 = Library:GetThemeColor("ElementHover")}, 0.15)
 			Library:Tween(TextLabel, {TextColor3 = Library:GetThemeColor("TextHover")}, 0.15)
@@ -2715,7 +2773,6 @@ function Library:Create(xHubName, themeName)
 			Library:Tween(keyStroke, {Color = Library:GetThemeColor("Stroke")}, 0.15)
 		end)
 
-		-- Reassign key
 		Keybind.MouseButton1Click:Connect(function()
 			TextLabel_2.Text = "..."
 			local connection
@@ -2751,9 +2808,9 @@ function Library:Create(xHubName, themeName)
 	local Player = Players.LocalPlayer
 	local Mouse = Player:GetMouse()
 	local UserInputService = game:GetService("UserInputService")
-	
-	
-	
+
+
+
 	function Library:ColorPicker(tab, colText, defcolor, callback)
 		colText = colText or "ColorPicker"
 		callback = callback or function() end
@@ -2767,7 +2824,6 @@ function Library:Create(xHubName, themeName)
 		local colorpickerActive = false
 		local darknessActive = false
 
-		-- Main button
 		local colorElement = Instance.new("TextButton")
 		colorElement.Name = "colorElement"
 		colorElement.Parent = tab
@@ -2795,7 +2851,6 @@ function Library:Create(xHubName, themeName)
 		togName.TextSize = 12
 		togName.TextXAlignment = Enum.TextXAlignment.Left
 
-		-- Fixed colorCurrent positioning
 		local colorCurrent = Instance.new("Frame")
 		colorCurrent.Name = "colorCurrent"
 		colorCurrent.Parent = colorElement
@@ -2807,7 +2862,6 @@ function Library:Create(xHubName, themeName)
 		UICorner_3.CornerRadius = UDim.new(0, 3)
 		UICorner_3.Parent = colorCurrent
 
-		-- Color picker dropdown
 		local colorInners = Instance.new("Frame")
 		colorInners.Name = "colorInners"
 		colorInners.Parent = tab
@@ -2820,7 +2874,6 @@ function Library:Create(xHubName, themeName)
 		UICorner_4.CornerRadius = UDim.new(0, 5)
 		UICorner_4.Parent = colorInners
 
-		-- Sample preview
 		local sampleFrame = Instance.new("Frame")
 		sampleFrame.Name = "Sample"
 		sampleFrame.Parent = colorInners
@@ -2862,7 +2915,6 @@ function Library:Create(xHubName, themeName)
 		svCircle.ZIndex = 2
 		svCircle.Position = UDim2.new(s, 0, 1 - v, 0)
 
-		-- Brightness slider
 		local brightnessSlider = Instance.new("ImageButton")
 		brightnessSlider.Name = "brightnessSlider"
 		brightnessSlider.Parent = colorInners
@@ -2886,11 +2938,9 @@ function Library:Create(xHubName, themeName)
 		brightnessCircle.ImageRectSize = Vector2.new(48, 48)
 		brightnessCircle.ZIndex = 2
 		brightnessCircle.Position = UDim2.new(0.5, 0, 1 - v, 0)
-		
-		
-		
-		
-		-- RGB inputs
+
+
+
 		local function createInput(x, y, label)
 			local lbl = Instance.new("TextLabel")
 			lbl.Parent = colorInners
@@ -2926,7 +2976,6 @@ function Library:Create(xHubName, themeName)
 		local gBox = createInput(70, 140, "G")
 		local bBox = createInput(130, 140, "B")
 
-		-- Rainbow toggle
 		local toggleBckg = Instance.new("TextButton")
 		toggleBckg.Name = "ToggleBckg"
 		toggleBckg.Parent = colorInners
@@ -2960,9 +3009,8 @@ function Library:Create(xHubName, themeName)
 		togName2.TextColor3 = Library:GetThemeColor("Text")
 		togName2.TextSize = 12
 		togName2.TextXAlignment = Enum.TextXAlignment.Left
-		
-		
-		-- After creating the element
+
+
 		self:RegisterObject(colorElement, {BackgroundColor3 = "Element"})
 		self:RegisterObject(colorInners, {BackgroundColor3 = "Background"})
 		self:RegisterObject(togName, {TextColor3 = "Text"})
@@ -2973,9 +3021,9 @@ function Library:Create(xHubName, themeName)
 		self:RegisterObject(toggleBckg, {BackgroundColor3 = "Element"})
 		self:RegisterObject(toggleIcon, {ImageColor3 = "Text"})
 		self:RegisterObject(togName2, {TextColor3 = "Text"})
-		
-		
-		
+
+
+
 		local function setColor(color, updateCircles)
 			updateCircles = updateCircles == nil and true or updateCircles
 
@@ -2988,7 +3036,6 @@ function Library:Create(xHubName, themeName)
 			local oldH, oldS, oldV = h, s, v
 			h, s, v = Color3.toHSV(color)
 
-			-- Only update circle positions if requested and values actually changed
 			if updateCircles then
 				if oldS ~= s or oldV ~= v then
 					-- Update SV circle position based on saturation and value
@@ -3003,9 +3050,8 @@ function Library:Create(xHubName, themeName)
 
 			callback(color)
 		end
-		
-		
-		-- Improved color selection function
+
+
 		local function updateColorPicker()
 			if colorpickerActive then
 				local x, y = Mouse.X - colorSquare.AbsolutePosition.X, Mouse.Y - colorSquare.AbsolutePosition.Y
@@ -3051,7 +3097,7 @@ function Library:Create(xHubName, themeName)
 				game.TweenService:Create(toggleIcon, TweenInfo.new(0.1, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut), {
 					ImageTransparency = 0
 				}):Play()
-			--	toggleBckg.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+				--	toggleBckg.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
 
 				if rainbowConnection then
 					rainbowConnection:Disconnect()
@@ -3068,13 +3114,11 @@ function Library:Create(xHubName, themeName)
 					setColor(Color3.fromHSV(h, s, v))
 				end)
 			else
-				-- Disable rainbow
 				game.TweenService:Create(toggleIcon, TweenInfo.new(0.1, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut), {
 					ImageTransparency = 1
 				}):Play()
-			--	toggleBckg.BackgroundColor3 = Color3.fromRGB(29, 29, 29)
+				--	toggleBckg.BackgroundColor3 = Color3.fromRGB(29, 29, 29)
 
-				-- Disconnect rainbow connection
 				if rainbowConnection then
 					rainbowConnection:Disconnect()
 					rainbowConnection = nil
@@ -3114,12 +3158,12 @@ function Library:Create(xHubName, themeName)
 				setColor(Color3.new(r, g, b))
 			end)
 		end
-		
-		
+
+
 		toggleBckg.MouseButton1Click:Connect(toggleRainbow)
-		
-		
-		
+
+
+
 		-- Open/close
 		colorElement.MouseButton1Click:Connect(function()
 			colorOpened = not colorOpened
@@ -3131,11 +3175,10 @@ function Library:Create(xHubName, themeName)
 			end
 		end)
 
-		-- Set initial color
 		setColor(defcolor)
 	end
-	
-	
+
+
 	function Library:MultiDropdown(tab, dropdownName, options, callback, settings)
 		settings = settings or {}
 		callback = callback or function() end
@@ -3152,9 +3195,8 @@ function Library:Create(xHubName, themeName)
 
 		local isOpen = false
 		local openDropdown = nil
-		
-		
-		-- Theme colors
+
+
 		local elementColor = Library:GetThemeColor("Element")
 		local strokeColor = Library:GetThemeColor("Stroke")
 		local bgColor = Library:GetThemeColor("Background")
@@ -3164,7 +3206,6 @@ function Library:Create(xHubName, themeName)
 		local selectedColor = Library:GetThemeColor("Success") or Color3.fromRGB(0, 255, 0)
 		local disabledColor = elementColor:Lerp(Color3.new(0,0,0), 0.2)
 
-		-- Main Dropdown
 		local Dropdown = Instance.new("TextButton")
 		Dropdown.Name = "Dropdown"
 		Dropdown.Parent = tab
@@ -3214,7 +3255,6 @@ function Library:Create(xHubName, themeName)
 		UIPadding.Parent = Title
 		UIPadding.PaddingLeft = UDim.new(0, 12)
 
-		-- Search Box
 		local SearchBox = Instance.new("TextBox")
 		SearchBox.Name = "SearchBox"
 		SearchBox.Parent = tab
@@ -3238,7 +3278,6 @@ function Library:Create(xHubName, themeName)
 		SearchStroke.Thickness = 1.5
 		SearchStroke.Parent = SearchBox
 
-		-- Option List
 		local List = Instance.new("ScrollingFrame")
 		List.Name = "List"
 		List.Parent = tab
@@ -3264,8 +3303,8 @@ function Library:Create(xHubName, themeName)
 		UIListLayout.Parent = List
 		UIListLayout.SortOrder = Enum.SortOrder.LayoutOrder
 		UIListLayout.Padding = UDim.new(0, 4)
-		
-		
+
+
 		self:RegisterObject(Dropdown, {BackgroundColor3 = "Element"})
 		self:RegisterObject(UIStroke, {Color = "Stroke"})
 		self:RegisterObject(Title, {TextColor3 = "Text"})
@@ -3274,9 +3313,8 @@ function Library:Create(xHubName, themeName)
 		self:RegisterObject(SearchStroke, {Color = "Stroke"})
 		self:RegisterObject(List, {BackgroundColor3 = "Background"})
 		self:RegisterObject(ListStroke, {Color = "Stroke"})
-		
-		
-		-- Create individual options
+
+
 		local function createOption(i, optionText)
 			local Option = Instance.new("TextButton")
 			Option.Name = "Option" .. i
@@ -3296,7 +3334,6 @@ function Library:Create(xHubName, themeName)
 			OptionStroke.Thickness = 1
 			OptionStroke.Parent = Option
 
-			-- Checkbox
 			local Checkbox = Instance.new("Frame")
 			Checkbox.Name = "Checkbox"
 			Checkbox.Parent = Option
@@ -3325,7 +3362,6 @@ function Library:Create(xHubName, themeName)
 			Icon.ImageTransparency = 1
 			Icon.Parent = Checkbox
 
-			-- Option label
 			local OptionLabel = Instance.new("TextLabel")
 			OptionLabel.Name = "OptionText"
 			OptionLabel.Parent = Option
@@ -3337,24 +3373,23 @@ function Library:Create(xHubName, themeName)
 			OptionLabel.TextSize = customFontSize
 			OptionLabel.Font = customFont
 			OptionLabel.TextXAlignment = Enum.TextXAlignment.Left
-			
+
 			self:RegisterObject(Option, {BackgroundColor3 = "Element"})
 			self:RegisterObject(OptionStroke, {Color = "Stroke"})
 			self:RegisterObject(Checkbox, {BackgroundColor3 = "Disabled"})
 			self:RegisterObject(CheckboxStroke, {Color = "Stroke"})
 			self:RegisterObject(Icon, {ImageColor3 = "Success"})
 			self:RegisterObject(OptionLabel, {TextColor3 = "Text"})
-			
-			
-			
-			-- Hover & click
+
+
+
 			Option.MouseEnter:Connect(function()
 				local currhoverColor = Library:GetThemeColor("Hover") or elementColor:Lerp(Color3.new(1,1,1), 0.05)
 				--Library:Tween(Option, {BackgroundColor3 = currhoverColor}, 0.15)
-				
+
 			end)
-			
-			
+
+
 			Option.MouseLeave:Connect(function()
 				local currentSelectedColor = Library:GetThemeColor("Success") or Color3.fromRGB(0, 255, 0)
 				local CurrelementColor = Library:GetThemeColor("Element")
@@ -3362,9 +3397,9 @@ function Library:Create(xHubName, themeName)
 				local currhoverColor = Library:GetThemeColor("Hover") or elementColor:Lerp(Color3.new(1,1,1), 0.05)
 				local currtextColor = Library:GetThemeColor("TextHover")
 				local textSecondaryColor = Library:GetThemeColor("TextSecondary")
-				
-				
-				
+
+
+
 				if table.find(selectedOptions, optionText) then
 					OptionLabel.TextColor3 = currtextColor
 					--Library:Tween(Option, {BackgroundColor3 = currentSelectedColor}, 0.15)
@@ -3372,8 +3407,8 @@ function Library:Create(xHubName, themeName)
 					--Library:Tween(Option, {BackgroundColor3 = currentElementColor}, 0.15)
 				end
 			end)
-			
-			
+
+
 			Option.MouseButton1Click:Connect(function()
 				if table.find(selectedOptions, optionText) then
 					table.remove(selectedOptions, table.find(selectedOptions, optionText))
@@ -3397,12 +3432,10 @@ function Library:Create(xHubName, themeName)
 			end)
 		end
 
-		-- Create all options
 		for i, optionText in ipairs(options) do
 			createOption(i, optionText)
 		end
 
-		-- Search filter
 		local function updateOptions(filterText)
 			for i, optionText in ipairs(options) do
 				local optionButton = List:FindFirstChild("Option" .. i)
@@ -3414,18 +3447,17 @@ function Library:Create(xHubName, themeName)
 		SearchBox:GetPropertyChangedSignal("Text"):Connect(function()
 			updateOptions(SearchBox.Text)
 		end)
-		
+
 		Dropdown.MouseEnter:Connect(function()
 			Library:Tween(Title, {TextColor3 = Library:GetThemeColor("Text")}, 0.15)
 		end)
-		
+
 		Dropdown.MouseLeave:Connect(function()
 			Library:Tween(Title, {TextColor3 = Library:GetThemeColor("TextHover")}, 0.15)
 		end)
-		
-		
-		
-		-- Dropdown toggle
+
+
+
 		Dropdown.MouseButton1Click:Connect(function()
 			if isOpen then
 				Icon.Image = "rbxassetid://6031091000"
@@ -3447,7 +3479,6 @@ function Library:Create(xHubName, themeName)
 			end
 		end)
 
-		-- API functions
 		function MdrFunction:Update(newOptions)
 			options = newOptions
 			selectedOptions = {}
@@ -3522,7 +3553,6 @@ function Library:Create(xHubName, themeName)
 		local openDropdown = nil
 		local selectedOption = nil
 
-		-- Theme colors
 		local elementColor = Library:GetThemeColor("Element")
 		local strokeColor = Library:GetThemeColor("Stroke")
 		local bgColor = Library:GetThemeColor("Background")
@@ -3531,7 +3561,6 @@ function Library:Create(xHubName, themeName)
 		local hoverColor = Library:GetThemeColor("Hover") or elementColor:Lerp(Color3.new(1,1,1), 0.05)
 		local selectedColor = Library:GetThemeColor("Success") or Color3.fromRGB(0, 255, 0)
 
-		-- Main Dropdown
 		local Dropdown = Instance.new("TextButton")
 		Dropdown.Name = "Dropdown"
 		Dropdown.Parent = tab
@@ -3581,7 +3610,6 @@ function Library:Create(xHubName, themeName)
 		Icon.Image = "rbxassetid://6031091000"
 		Icon.ImageColor3 = textSecondaryColor
 
-		-- Search box
 		local SearchBox = Instance.new("TextBox")
 		SearchBox.Name = "SearchBox"
 		SearchBox.Parent = tab
@@ -3606,7 +3634,6 @@ function Library:Create(xHubName, themeName)
 		SearchStroke.Thickness = 1.5
 		SearchStroke.Parent = SearchBox
 
-		-- Options list
 		local List = Instance.new("ScrollingFrame")
 		List.Name = "List"
 		List.Parent = tab
@@ -3623,8 +3650,8 @@ function Library:Create(xHubName, themeName)
 		List.ScrollBarThickness = 4
 		List.ScrollingDirection = Enum.ScrollingDirection.Y
 		List.Visible = false
-		
-		
+
+
 		local ListCorner = Instance.new("UICorner")
 		ListCorner.CornerRadius = UDim.new(0, 6)
 		ListCorner.Parent = List
@@ -3633,14 +3660,13 @@ function Library:Create(xHubName, themeName)
 		ListStroke.Color = strokeColor
 		ListStroke.Thickness = 1.5
 		ListStroke.Parent = List
-		
-		
+
+
 		local UIListLayout = Instance.new("UIListLayout")
 		UIListLayout.Parent = List
 		UIListLayout.SortOrder = Enum.SortOrder.LayoutOrder
 		UIListLayout.Padding = UDim.new(0, 3)
 
-		-- Register for theme
 		self:RegisterObject(Dropdown, {BackgroundColor3 = "Element"})
 		self:RegisterObject(UIStroke, {Color = "Stroke"})
 		self:RegisterObject(UICorner, {}) -- corners usually don't change color
@@ -3653,9 +3679,8 @@ function Library:Create(xHubName, themeName)
 		self:RegisterObject(ListStroke, {Color = "Stroke"})
 		self:RegisterObject(ListCorner, {})
 
-		
-		
-		-- Internal functions
+
+
 		local function updateTitle()
 			Title.Text = selectedOption or dropdownName
 		end
@@ -3697,22 +3722,22 @@ function Library:Create(xHubName, themeName)
 			for _, child in ipairs(List:GetChildren()) do
 				if child:IsA("TextButton") then child:Destroy() end
 			end
-			
+
 			local currelementColor = Library:GetThemeColor("Element")
 			local currtextColor = Library:GetThemeColor("Text")
 			local textSecondaryColor = Library:GetThemeColor("TextSecondary")
-			
+
 			for i, optionText in ipairs(options) do
 				local Option = Instance.new("TextButton")
 				Option.Name = "Option"..i
 				Option.Parent = List
 				Option.BackgroundColor3 = currelementColor
-			--	Option.BackgroundTransparency = 1
+				--	Option.BackgroundTransparency = 1
 				Option.BorderSizePixel = 0
 				Option.Size = UDim2.new(1, 0, 0, 28)
 				Option.AutoButtonColor = false
 				Option.Text = ""
-				
+
 				local OptionCorner = Instance.new("UICorner")
 				OptionCorner.CornerRadius = UDim.new(0, 4)
 				OptionCorner.Parent = Option
@@ -3746,13 +3771,13 @@ function Library:Create(xHubName, themeName)
 				local IndicatorCorner = Instance.new("UICorner")
 				IndicatorCorner.CornerRadius = UDim.new(0, 2)
 				IndicatorCorner.Parent = SelectionIndicator
-				
+
 				self:RegisterObject(Option, {BackgroundColor3 = "Element"})
 				self:RegisterObject(OptionStroke, {Color = "Stroke"})
 				self:RegisterObject(OptionLabel, {TextColor3 = "Text"})
 				self:RegisterObject(SelectionIndicator, {BackgroundColor3 = "Success"})
-				
-				
+
+
 				if optionText == selectedOption then
 					SelectionIndicator.Visible = true
 					Option.BackgroundColor3 = selectedColor
@@ -3763,7 +3788,7 @@ function Library:Create(xHubName, themeName)
 					updateTitle()
 					for _, opt in ipairs(List:GetChildren()) do
 						if opt:IsA("TextButton") then
-						--	opt.BackgroundColor3 = (opt == Option and selectedColor or elementColor)
+							--	opt.BackgroundColor3 = (opt == Option and selectedColor or elementColor)
 							opt.SelectionIndicator.Visible = (opt == Option)
 						end
 					end
@@ -3777,22 +3802,22 @@ function Library:Create(xHubName, themeName)
 					local currhoverColor = Library:GetThemeColor("Hover") or elementColor:Lerp(Color3.new(1,1,1), 0.05)
 					local currtextColor = Library:GetThemeColor("TextHover")
 					local textSecondaryColor = Library:GetThemeColor("TextSecondary")
-					
+
 					if OptionLabel.Text ~= selectedOption then
-					--	Option.BackgroundColor3 = currhoverColor
+						--	Option.BackgroundColor3 = currhoverColor
 						OptionLabel.TextColor3 = currtextColor
 					end
 				end)
-				
+
 				Option.MouseLeave:Connect(function()
 					local CurrLelementColor = Library:GetThemeColor("Element")
 					local currLstrokeColor = Library:GetThemeColor("Stroke")
 					local currtextColor = Library:GetThemeColor("Text")
 					local textSecondaryColor = Library:GetThemeColor("TextSecondary")
-					
-					
+
+
 					if OptionLabel.Text ~= selectedOption then
-					--	Option.BackgroundColor3 = CurrLelementColor
+						--	Option.BackgroundColor3 = CurrLelementColor
 						OptionLabel.TextColor3 = currtextColor
 					end
 				end)
@@ -3860,6 +3885,7 @@ function Library:Create(xHubName, themeName)
 
 	return Library
 end
+
 
 return {
 	Animations = Animations, 
