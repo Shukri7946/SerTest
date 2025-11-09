@@ -550,7 +550,10 @@ Library.Themes = {
 		TabHover = Color3.fromRGB(35, 65, 90),
 		TabActive = Color3.fromRGB(0, 160, 230),
 		Icon = Color3.fromRGB(170, 210, 230)
-	}
+	},
+	
+	
+	
 }
 
 
@@ -644,14 +647,43 @@ end
 
 
 
+-- // Cool transition overlay
+function Library:PreviewTheme(themeName)
+	local theme = self.Themes[themeName]
+	if not theme then return end
+	
+	local screenGui = Instance.new("ScreenGui")
+	screenGui.IgnoreGuiInset = true
+	screenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+	screenGui.ResetOnSpawn = false
+	screenGui.Parent = game:GetService("CoreGui")
+	
+	local overlay = Instance.new("Frame")
+	overlay.Size = UDim2.fromScale(1, 1)
+	overlay.BackgroundColor3 = theme.Background or Color3.new(0, 0, 0)
+	overlay.BackgroundTransparency = 1
+	overlay.ZIndex = 9999
+	overlay.BorderSizePixel = 0
+	overlay.Parent = screenGui
+	
+	
+	
+	
+	
+	Animations.FadeIn(overlay, 0.15)
+	task.wait(0.15)
+	Animations.FadeOut(overlay, 0.25)
+	game:GetService("Debris"):AddItem(overlay, 0.4)
+end
+
 
 function Library:Create(xHubName, themeName)
 
 
 	--if  game:GetService("CoreGui"):FindFirstChild(LibraryName) then
 	--	game:GetService("CoreGui")[LibraryName]:Destroy()
---	end
-	
+	--	end
+
 	local function findDescendant(parent, name)
 		if not parent then return nil end
 		for _, child in ipairs(parent:GetChildren()) do
@@ -677,16 +709,16 @@ function Library:Create(xHubName, themeName)
 		end
 	end
 
-	
-	
+
+
 	if Library.LastUI and Library.LastUI.Parent then
 		Library.LastUI:Destroy()
 		Library.LastUI = nil
 		Library.LastLibraryName = nil
 	end
-	
-	
-	
+
+
+
 	local xHubName = xHubName or "Seraph Hub"
 	if themeName and self.Themes[themeName] then
 		self.CurrentTheme = themeName
@@ -749,11 +781,11 @@ function Library:Create(xHubName, themeName)
 
 	Library:Drag(Menu, Topbar)
 	Library:Drag(ImageButtonK)
-	
+
 	Library.LastUI = ScreenGui
 	Library.LastLibraryName = LibraryName
-	
-	
+
+
 	local originalSize = UDim2.new(0, 525, 0, 318)
 	local minimizedSize = UDim2.new(0, 525, 0, 36)
 
@@ -1327,13 +1359,13 @@ function Library:Create(xHubName, themeName)
 		end
 		return tweens
 	end
-	
-	
+
+
 	local ui = ScreenGui or Library.LastUI
 	local activeTween = nil
 	local CloseACTween = nil
-	
-	
+
+
 	Close.MouseButton1Click:Connect(function()
 		if CloseACTween then
 			for _, tween in ipairs(CloseACTween) do
@@ -1442,15 +1474,26 @@ function Library:Create(xHubName, themeName)
 
 	function Library:AddThemeSelector(tab)
 		local themeNames = self:GetThemes()
-
 		local themeDropdown = self:Dropdown(tab, "Theme", themeNames, function(selected)
 			self:SetTheme(selected)
 		end)
 
 		themeDropdown:Setdrop(self.CurrentTheme)
 
+		for _, button in ipairs(themeDropdown.Items or {}) do
+			if button:IsA("TextButton") then
+				button.MouseEnter:Connect(function()
+					local previewTheme = button.Text
+					if self.Themes[previewTheme] then
+						self:PreviewTheme(previewTheme)
+					end
+				end)
+			end
+		end
+
 		return themeDropdown
 	end
+
 
 
 
@@ -1613,8 +1656,8 @@ function Library:Create(xHubName, themeName)
 		self:RegisterObject(TabTitle, {TextColor3 = "TabText"})
 
 		self:RegisterObject(Holder, {BackgroundColor3 = "Background"})
-		
-		
+
+
 		local function RefreshTabs()
 			local theme = Library.Themes[Library.CurrentTheme]
 			for _, button in pairs(Holder2:GetChildren()) do
@@ -1631,8 +1674,8 @@ function Library:Create(xHubName, themeName)
 				end
 			end
 		end
-		
-		
+
+
 
 		Example.MouseEnter:Connect(function()
 			local _, theme = Library:GetTheme()
@@ -1690,8 +1733,8 @@ function Library:Create(xHubName, themeName)
 			activeTab = Example
 			RefreshTabs()
 		end)
-		
-		
+
+
 		return Holder
 	end
 
@@ -1731,20 +1774,21 @@ function Library:Create(xHubName, themeName)
 			local accentColor = NotificationThemes[typeName] or NotificationThemes.Default
 
 			local NotificationSounds = {
-				Success = "rbxassetid://9118823103", -- pleasant "success" chime
-				Error   = "rbxassetid://9118828565", -- short error buzz
-				Info    = "rbxassetid://9118831354", -- soft info tone
-				Warning = "rbxassetid://9118833695", -- alert tone
-				Default = "rbxassetid://9118835701"  -- neutral pop
+				Success = "rbxassetid://16888522738", -- pleasant "success" chime
+				Error   = "rbxassetid://113721818600044", -- short error buzz
+				Info    = "rbxassetid://98797174600699", -- soft info tone
+				Warning = "rbxassetid://6432593850", -- alert tone
+				Default = "rbxassetid://8551372796"  -- neutral pop
 			}
+			
 
 			local ScreenGui = Instance.new("ScreenGui")
 			ScreenGui.Name = "Notification_" .. title
 			ScreenGui.ResetOnSpawn = false
 			ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 			ScreenGui.Parent = game:GetService("CoreGui")
-			
-			
+
+
 			local Notification = Instance.new("Frame")
 			Notification.Name = "Notification"
 			Notification.Parent = ScreenGui
@@ -1885,8 +1929,8 @@ function Library:Create(xHubName, themeName)
 					if ScreenGui then ScreenGui:Destroy() end
 				end)
 			end)
-			
-			
+
+
 			if #Notifications > MaxVisible then
 				local oldest = table.remove(Notifications, 1)
 				if oldest and oldest.Gui then
@@ -1895,9 +1939,9 @@ function Library:Create(xHubName, themeName)
 				UpdateStackPositions(self)
 			end
 		end
-end
-	
-	
+	end
+
+
 
 
 
@@ -1973,7 +2017,8 @@ end
 		local UIScale = Instance.new("UIScale")
 		local UIStroke = Instance.new("UIStroke")
 		local ClickSound = Instance.new("Sound")
-
+		
+		
 		Button.Name = "Button"
 		Button.Parent = Parent
 		Button.BackgroundColor3 = Library:GetThemeColor("Element")
@@ -2039,20 +2084,23 @@ end
 		UIScale.Parent = ImageLabel
 		UIScale.Scale = 0.85
 
-		ClickSound.SoundId = "rbxassetid://9114262381"
+		ClickSound.SoundId = "rbxassetid://8816939097"
 		ClickSound.Volume = 0.4
 		ClickSound.Parent = Button
-
+		
+		
+		
+		
 		self:RegisterObject(Button, {BackgroundColor3 = "Element"})
 		self:RegisterObject(TextLabel, {TextColor3 = "Text"})
 		self:RegisterObject(UIStroke, {Color = "Stroke"})
 		self:RegisterObject(ActualThing, {BackgroundColor3 = "Element"})
 		self:RegisterObject(ImageLabel, {ImageColor3 = "Icon"})
 
-		
-		
-		
-		
+
+
+
+
 		Button.MouseEnter:Connect(function()
 			Library:Tween(Button, {BackgroundColor3 = Library:GetThemeColor("ElementHover")}, 0.15)
 			Library:Tween(UIStroke, {Color = Library:GetThemeColor("StrokeHover")}, 0.15)
@@ -2331,7 +2379,7 @@ end
 		HoverSound.Parent = Toggle
 
 		local ClickSound = Instance.new("Sound")
-		ClickSound.SoundId = "rbxassetid://9114262381"
+		ClickSound.SoundId = "rbxassetid://9119717523"
 		ClickSound.Volume = 0.4
 		ClickSound.Parent = Toggle
 
@@ -2410,9 +2458,9 @@ end
 		self:RegisterObject(ToggleBckg, {BackgroundColor3 = "ElementHover"})
 		self:RegisterObject(Icon, {ImageColor3 = "Success"})
 		self:RegisterObject(PulseEffect, {BackgroundColor3 = "Success"})
-		
-		
-		
+
+
+
 		local isToggled = false
 
 		local function updateVisual()
@@ -2426,8 +2474,8 @@ end
 				ToggleBckg.BackgroundColor3 = Library:GetThemeColor("ElementHover")
 			end
 		end
-		
-		
+
+
 		local function playToggleAnimation()
 			ClickSound:Play()
 			PulseEffect.Visible = true
@@ -3190,11 +3238,9 @@ end
 			end)
 		end
 
-
 		toggleBckg.MouseButton1Click:Connect(toggleRainbow)
-
-
-
+		
+		
 		-- Open/close
 		colorElement.MouseButton1Click:Connect(function()
 			colorOpened = not colorOpened
